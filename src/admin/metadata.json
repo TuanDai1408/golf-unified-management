@@ -1,0 +1,8 @@
+{
+  "name": "GolfAdmin Pro Management Suite",
+  "description": "A comprehensive golf club management application featuring dashboard analytics, booking management, course status tracking, user administration, and real-time slot scheduling.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

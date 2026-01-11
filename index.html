@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Golf Management Hub</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "var(--primary)",
+            "primary-hover": "var(--primary-hover)",
+            "primary-light": "var(--primary-light)",
+            "primary-subtle": "var(--primary-subtle)",
+            "background": "var(--background)",
+            "surface": "var(--surface)",
+            "border-light": "var(--border-light)",
+            "text-main": "var(--text-main)",
+            "text-muted": "var(--text-muted)",
+
+            /* Manager specific */
+            "background-light": "var(--background-light)",
+            "background-dark": "var(--background-dark)",
+            "surface-light": "var(--surface-light)",
+            "surface-dark": "var(--surface-dark)",
+            "slate-custom": "var(--slate-custom)",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"],
+            "sans": ["Inter", "sans-serif"]
+          },
+        },
+      },
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>
