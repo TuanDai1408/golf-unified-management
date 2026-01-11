@@ -1,0 +1,10 @@
+tunnel: 3f1e4be5-ed81-4286-a851-252be9286c27
+credentials-file: C:\Users\trant\.cloudflared\3f1e4be5-ed81-4286-a851-252be9286c27.json
+
+ingress:
+  - hostname: golfmanager.daidataly.online
+    # Nếu muốn trỏ về bản deploy trên Vercel:
+    # service: https://golf-unified-management.vercel.app
+    # Nếu muốn trỏ về bản đang chạy local:
+    service: http://localhost:5173
+  - service: http_status:404

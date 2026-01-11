@@ -83,6 +83,7 @@ export interface Translations {
         searchPlaceholder: string;
         viewDetails: string;
         editClub: string;
+        filterAll: string;
         totalHoles: string;
         holes: string;
         par: string;
@@ -159,6 +160,12 @@ export interface Translations {
         actionEdit: string;
         actionClose: string;
         actionOpen: string;
+    };
+
+    // Reports / Báo cáo / 보고서
+    reports: {
+        inventory: string;
+        stats: string;
     };
 
     // Header / Tiêu đề / 헤더
@@ -262,6 +269,7 @@ export const translations: Record<Language, Translations> = {
             searchPlaceholder: 'Tìm kiếm sân golf...',
             viewDetails: 'Xem chi tiết',
             editClub: 'Chỉnh sửa',
+            filterAll: 'Tất cả',
             totalHoles: 'Tổng số hố',
             holes: 'hố',
             par: 'Par',
@@ -334,6 +342,10 @@ export const translations: Record<Language, Translations> = {
             actionEdit: 'Sửa',
             actionClose: 'Đóng',
             actionOpen: 'Mở',
+        },
+        reports: {
+            inventory: 'Kho hàng',
+            stats: 'Thống kê',
         },
         header: {
             breadcrumb: 'Trang chủ / Bảng điều khiển',
@@ -431,6 +443,7 @@ export const translations: Record<Language, Translations> = {
             searchPlaceholder: '골프장 검색...',
             viewDetails: '세부정보 보기',
             editClub: '수정',
+            filterAll: '전체',
             totalHoles: '총 홀 수',
             holes: '홀',
             par: '파',
@@ -503,6 +516,10 @@ export const translations: Record<Language, Translations> = {
             actionEdit: '수정',
             actionClose: '닫기',
             actionOpen: '열기',
+        },
+        reports: {
+            inventory: '재고',
+            stats: '통계',
         },
         header: {
             breadcrumb: '홈 / 대시보드',
@@ -600,6 +617,7 @@ export const translations: Record<Language, Translations> = {
             searchPlaceholder: 'Search golf clubs...',
             viewDetails: 'View Details',
             editClub: 'Edit',
+            filterAll: 'All',
             totalHoles: 'Total Holes',
             holes: 'holes',
             par: 'Par',
@@ -672,6 +690,10 @@ export const translations: Record<Language, Translations> = {
             actionEdit: 'Edit',
             actionClose: 'Close',
             actionOpen: 'Open',
+        },
+        reports: {
+            inventory: 'Inventory',
+            stats: 'Statistics',
         },
         header: {
             breadcrumb: 'Home / Dashboard',
