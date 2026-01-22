@@ -1,10 +1,118 @@
-
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useLanguage } from '../../shared/LanguageContext';
+import { createCourse, uploadCourseImages } from '../services/courseService';
 
 const CourseDetails: React.FC = () => {
   const { t } = useLanguage();
   const trans = t.manager.course;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [formData, setFormData] = useState({
+    name: 'Green Valley Championship Course',
+    description: 'Nestled in the rolling hills, this 18-hole championship course offers a challenge for golfers of all skill levels.',
+    address: 'Hanoi, Vietnam',
+    holes: 18,
+    lat: 21.0285,
+    lng: 105.8542,
+    images: [] as string[],
+    max_players: 4,
+    region: 'Hanoi',
+    price_weekday: 2500000,
+    price_weekend: 3500000,
+    tee_times: ['06:00', '06:15', '06:30', '07:00', '07:30'] as string[]
+  });
+
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<{ url: string; file: File }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ title: '', sub: '' });
+  const [newTeeTime, setNewTeeTime] = useState('06:00');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'holes' || name === 'lat' || name === 'lng' || name === 'max_players' || name === 'price_weekday' || name === 'price_weekend' ? Number(value) : value
+    }));
+  };
+
+  const addTeeTime = () => {
+    if (!formData.tee_times.includes(newTeeTime)) {
+      setFormData(prev => ({
+        ...prev,
+        tee_times: [...prev.tee_times, newTeeTime].sort()
+      }));
+    }
+  };
+
+  const removeTeeTime = (time: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tee_times: prev.tee_times.filter(t => t !== time)
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      const updatedFiles = [...selectedFiles, ...newFiles].slice(0, 5);
+      setSelectedFiles(updatedFiles);
+
+      const newPreviews = updatedFiles.map(file => ({
+        url: URL.createObjectURL(file),
+        file
+      }));
+      setPreviews(newPreviews);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+
+    // Revoke URL to avoid memory leaks
+    URL.revokeObjectURL(previews[index].url);
+    const updatedPreviews = previews.filter((_, i) => i !== index);
+    setPreviews(updatedPreviews);
+  };
+
+  const handleSubmit = async (status: 'active' | 'draft') => {
+    if (selectedFiles.length === 0 && formData.images.length === 0) {
+      setToastMessage({ title: 'Error', sub: 'Please upload at least one image' });
+      setShowToast(true);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let imageUrls = [...formData.images];
+      if (selectedFiles.length > 0) {
+        setToastMessage({ title: 'Uploading', sub: `Uploading ${selectedFiles.length} images...` });
+        setShowToast(true);
+        const uploadedUrls = await uploadCourseImages(selectedFiles);
+        imageUrls = [...imageUrls, ...uploadedUrls];
+      }
+
+      await createCourse({ ...formData, images: imageUrls, status });
+      setToastMessage({ title: 'Success', sub: status === 'active' ? 'Course published' : 'Draft saved' });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+
+      // Reset after success if active
+      if (status === 'active') {
+        setSelectedFiles([]);
+        setPreviews([]);
+      }
+    } catch (error: any) {
+      setToastMessage({ title: 'Error', sub: error.message });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-10 overflow-y-auto h-full custom-scrollbar bg-background-light">
       <div className="max-w-6xl mx-auto space-y-8 pb-20">
@@ -18,9 +126,6 @@ const CourseDetails: React.FC = () => {
             </div>
             <p className="text-slate-500 max-w-2xl">{trans.subtitle}</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-sm">
-            <span className="material-symbols-outlined text-[18px]">visibility</span> {trans.viewListing}
-          </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -33,122 +138,222 @@ const CourseDetails: React.FC = () => {
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.courseName}</label>
-                  <input className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary focus:border-primary" type="text" defaultValue="Green Valley Championship Course" />
+                  <input
+                    name="name"
+                    className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary focus:border-primary"
+                    type="text"
+                    value={formData.name}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.aboutCourse}</label>
-                  <div className="w-full rounded-lg border border-slate-200 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-primary/20">
-                    <div className="flex items-center gap-1 p-2 border-b border-slate-200 bg-slate-50/50">
-                      <button className="p-1 text-slate-500 hover:bg-slate-200 rounded"><span className="material-symbols-outlined text-[18px]">format_bold</span></button>
-                      <button className="p-1 text-slate-500 hover:bg-slate-200 rounded"><span className="material-symbols-outlined text-[18px]">format_italic</span></button>
-                      <button className="p-1 text-slate-500 hover:bg-slate-200 rounded"><span className="material-symbols-outlined text-[18px]">format_list_bulleted</span></button>
-                    </div>
-                    <textarea className="w-full border-none bg-transparent p-3 text-slate-900 focus:ring-0" rows={4} placeholder={trans.aboutPlaceholder} defaultValue="Nestled in the rolling hills, this 18-hole championship course offers a challenge for golfers of all skill levels." />
-                  </div>
-                  <p className="text-right text-xs text-slate-400 mt-1">142/500 characters</p>
+                  <textarea
+                    name="description"
+                    className="w-full rounded-lg border-slate-200 bg-slate-50 p-3 text-slate-900 focus:ring-primary"
+                    rows={4}
+                    placeholder={trans.aboutPlaceholder}
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
                 </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.numHoles}</label>
-                    <select className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary">
-                      <option>{trans.holes9}</option>
-                      <option selected>{trans.holes18}</option>
-                      <option>{trans.holes36}</option>
+                    <select
+                      name="holes"
+                      className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      value={formData.holes}
+                      onChange={handleChange}
+                    >
+                      <option value={9}>{trans.holes9}</option>
+                      <option value={18}>{trans.holes18}</option>
+                      <option value={36}>{trans.holes36}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.par}</label>
-                    <input className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary" type="number" defaultValue={72} />
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.maxPlayers}</label>
+                    <select
+                      name="max_players"
+                      className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      value={formData.max_players}
+                      onChange={handleChange}
+                    >
+                      {[1, 2, 3, 4].map(num => (
+                        <option key={num} value={num}>{num} {num === 1 ? trans.player : trans.players}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
-              <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-                <span className="p-2 bg-green-50 rounded-lg text-primary"><span className="material-symbols-outlined">schedule</span></span>
-                <h3 className="text-lg font-bold text-slate-900">{trans.operations}</h3>
-              </div>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.openingHours}</label>
-                  <div className="flex items-center gap-3">
-                    <input className="flex-1 rounded-lg border-slate-200 bg-slate-50 text-slate-900" type="time" defaultValue="06:00" />
-                    <span className="text-slate-400 font-medium">{trans.to}</span>
-                    <input className="flex-1 rounded-lg border-slate-200 bg-slate-50 text-slate-900" type="time" defaultValue="19:00" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.region}</label>
+                    <select
+                      name="region"
+                      className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      value={formData.region}
+                      onChange={handleChange}
+                    >
+                      <option value="Hanoi">{trans.hanoi}</option>
+                      <option value="Da Nang">{trans.daNang}</option>
+                      <option value="Ho Chi Minh City">{trans.hoChiMinh}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.address}</label>
+                    <input
+                      name="address"
+                      className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      type="text"
+                      value={formData.address}
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.cancelPolicy}</label>
-                  <textarea className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary" rows={3} placeholder="e.g. Full refund if cancelled 24 hours prior..." />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.weekdayPrice}</label>
+                    <input
+                      name="price_weekday"
+                      className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      type="number"
+                      value={formData.price_weekday}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">{trans.weekendPrice}</label>
+                    <input
+                      name="price_weekend"
+                      className="w-full rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      type="number"
+                      value={formData.price_weekend}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100">
+                  <label className="block text-sm font-semibold text-slate-700 mb-4">{trans.teeTimes}</label>
+                  <div className="flex gap-2 mb-4">
+                    <select
+                      className="flex-1 rounded-lg border-slate-200 bg-slate-50 text-slate-900 focus:ring-primary"
+                      value={newTeeTime}
+                      onChange={(e) => setNewTeeTime(e.target.value)}
+                    >
+                      {Array.from({ length: 48 }).map((_, i) => {
+                        const hour = Math.floor(i / 2).toString().padStart(2, '0');
+                        const min = (i % 2 === 0 ? '00' : '30');
+                        const time = `${hour}:${min}`;
+                        return <option key={time} value={time}>{time}</option>;
+                      })}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={addTeeTime}
+                      className="px-4 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800"
+                    >
+                      {trans.addTime}
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {formData.tee_times.map(time => (
+                      <span key={time} className="flex items-center gap-1 px-3 py-1 bg-green-50 text-primary border border-primary/20 rounded-full text-sm font-bold">
+                        {time}
+                        <button onClick={() => removeTeeTime(time)} className="hover:text-red-500 flex items-center">
+                          <span className="material-symbols-outlined text-sm">close</span>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
+
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5">
               <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">{trans.publishing}</h3>
               <div className="space-y-3">
-                <button className="w-full py-3 bg-primary text-slate-900 font-bold rounded-lg hover:bg-green-400 shadow-lg shadow-primary/20 flex justify-center items-center gap-2">
-                  <span className="material-symbols-outlined">publish</span> {trans.publishChanges}
+                <button
+                  onClick={() => handleSubmit('active')}
+                  disabled={loading}
+                  className="w-full py-3 bg-primary text-slate-900 font-bold rounded-lg hover:bg-green-400 shadow-lg shadow-primary/20 flex justify-center items-center gap-2 disabled:opacity-50"
+                >
+                  <span className="material-symbols-outlined">{loading ? 'sync' : 'publish'}</span> {loading ? 'Processing...' : trans.publishChanges}
                 </button>
-                <button className="w-full py-3 border border-slate-200 text-slate-600 font-bold rounded-lg hover:bg-slate-50 flex justify-center items-center gap-2">
-                  <span className="material-symbols-outlined">save</span> {trans.saveDraft}
-                </button>
-              </div>
-              <div className="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-400 flex justify-between">
-                <span>{trans.lastSaved.split(':')[0]}</span><span>2 mins ago</span>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-900">{trans.photos}</h3>
-                <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">4/10</span>
+                <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded">{previews.length}/5</span>
               </div>
-              <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors mb-6 group">
-                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-primary">cloud_upload</span>
-                </div>
-                <p className="text-sm font-semibold text-slate-700">{trans.uploadLabel}</p>
-                <p className="text-xs text-slate-400 mt-1">{trans.uploadHint}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="aspect-square rounded-lg overflow-hidden bg-cover bg-center border border-slate-100" style={{ backgroundImage: "url('https://picsum.photos/seed/golf1/200/200')" }}></div>
-                <div className="aspect-square rounded-lg overflow-hidden bg-cover bg-center border border-slate-100" style={{ backgroundImage: "url('https://picsum.photos/seed/golf2/200/200')" }}></div>
-                <div className="aspect-square rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center p-2">
-                  <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden mb-2">
-                    <div className="h-full bg-primary w-2/3 animate-pulse"></div>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+              />
+
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {previews.map((preview, index) => (
+                  <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-slate-200">
+                    <img src={preview.url} className="w-full h-full object-cover" alt={`Preview ${index}`} />
+                    <button
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">close</span>
+                    </button>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium uppercase">{trans.uploading}</p>
-                </div>
+                ))}
+
+                {previews.length < 5 && (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="aspect-square border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-primary">add_a_photo</span>
+                    <span className="text-[10px] font-bold mt-1 text-slate-400 uppercase">Add Photo</span>
+                  </div>
+                )}
               </div>
-            </div>
-            <div className="bg-primary/5 rounded-xl p-4 border border-primary/10 flex gap-3">
-              <span className="material-symbols-outlined text-primary">tips_and_updates</span>
-              <div>
-                <p className="text-sm font-bold text-slate-800 mb-1">Pro Tip</p>
-                <p className="text-xs text-slate-600 leading-relaxed">{trans.proTip.replace('Pro Tip: ', '')}</p>
-              </div>
+
+              <p className="text-xs text-slate-400 text-center">{trans.uploadHint}</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Toast */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <div className="flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl animate-bounce">
-          <span className="material-symbols-outlined text-primary">check_circle</span>
-          <div>
-            <p className="text-sm font-bold">Draft Saved</p>
-            <p className="text-xs text-slate-400">All changes secured.</p>
+      {showToast && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <div className="flex items-center gap-3 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-xl">
+            <span className={`material-symbols-outlined text-primary ${loading ? 'animate-spin' : ''}`}>
+              {toastMessage.title === 'Error' ? 'error' : (toastMessage.title === 'Uploading' ? 'sync' : 'check_circle')}
+            </span>
+            <div>
+              <p className="text-sm font-bold">{toastMessage.title}</p>
+              <p className="text-xs text-slate-400">{toastMessage.sub}</p>
+            </div>
           </div>
-          <button className="ml-2 text-slate-500 hover:text-white"><span className="material-symbols-outlined text-[18px]">close</span></button>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
 export default CourseDetails;
+
+
+

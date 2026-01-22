@@ -130,6 +130,18 @@ export interface Translations {
         uploading: string;
         proTip: string;
         proShopManager: string;
+        address: string;
+        maxPlayers: string;
+        player: string;
+        players: string;
+        region: string;
+        hanoi: string;
+        daNang: string;
+        hoChiMinh: string;
+        weekdayPrice: string;
+        weekendPrice: string;
+        teeTimes: string;
+        addTime: string;
     };
     common: {
         loading: string;
@@ -270,6 +282,18 @@ export const translations: Record<Language, Translations> = {
             uploading: 'Đang tải lên...',
             proTip: 'Mẹo: Ảnh chất lượng cao của các hố đặc trưng giúp tăng tỉ lệ đặt sân lên đến 20%.',
             proShopManager: 'Quản lý Pro Shop',
+            address: 'Địa chỉ',
+            maxPlayers: 'Số người chơi tối đa',
+            player: 'Người chơi',
+            players: 'Người chơi',
+            region: 'Vùng miền',
+            hanoi: 'Hà Nội',
+            daNang: 'Đà Nẵng',
+            hoChiMinh: 'Hồ Chí Minh',
+            weekdayPrice: 'Giá ngày thường (VND)',
+            weekendPrice: 'Giá cuối tuần (VND)',
+            teeTimes: 'Danh sách giờ chơi',
+            addTime: 'Thêm giờ',
         },
         common: {
             loading: 'Đang tải...',
@@ -408,6 +432,18 @@ export const translations: Record<Language, Translations> = {
             uploading: '업로드 중...',
             proTip: '팁: 시그니처 홀의 고화질 사진은 예약률을 최대 20%까지 높입니다.',
             proShopManager: '프로샵 매니저',
+            address: '주소',
+            maxPlayers: '최대 플레이어 수',
+            player: '인',
+            players: '인',
+            region: '지역',
+            hanoi: '하노이',
+            daNang: '다낭',
+            hoChiMinh: '호치민',
+            weekdayPrice: '평일 요금 (VND)',
+            weekendPrice: '주말 요금 (VND)',
+            teeTimes: '티타임 목록',
+            addTime: '시간 추가',
         },
         common: {
             loading: '로딩 중...',
@@ -546,6 +582,18 @@ export const translations: Record<Language, Translations> = {
             uploading: 'Uploading...',
             proTip: 'Pro Tip: High-quality photos of signature holes increase booking rates by up to 20%.',
             proShopManager: 'Pro Shop Manager',
+            address: 'Address',
+            maxPlayers: 'Maximum Players',
+            player: 'Player',
+            players: 'Players',
+            region: 'Region',
+            hanoi: 'Hanoi',
+            daNang: 'Da Nang',
+            hoChiMinh: 'Ho Chi Minh',
+            weekdayPrice: 'Weekday Price (VND)',
+            weekendPrice: 'Weekend Price (VND)',
+            teeTimes: 'Tee Times',
+            addTime: 'Add Time',
         },
         common: {
             loading: 'Loading...',
