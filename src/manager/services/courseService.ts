@@ -1,6 +1,6 @@
 import { supabase } from '../../shared/supabase';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = (import.meta as any).env.VITE_API_URL || 'https://golfviet-premium-backend-production.up.railway.app/api';
 
 export const uploadCourseImage = async (file: File) => {
     const fileExt = file.name.split('.').pop();
