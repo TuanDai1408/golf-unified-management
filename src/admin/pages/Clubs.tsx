@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { ClubStatus } from '../types';
 import { useLanguage } from '../../shared/LanguageContext';
 
@@ -7,19 +7,113 @@ const Clubs: React.FC = () => {
   const { t } = useLanguage();
   const trans = t.admin.clubs;
 
-  const clubs = [
-    { name: "Pine Valley Golf Club", id: "#GC-4921", location: "Clementon, NJ", holes: 18, par: 70, status: ClubStatus.Open, bookings: "48/60", trend: "+12%", progress: 80, image: "https://picsum.photos/seed/golf1/200/200" },
-    { name: "Augusta National", id: "#GC-8832", location: "Augusta, GA", holes: 18, par: 72, status: ClubStatus.Maintenance, bookings: "0/0", trend: "-", progress: 0, image: "https://picsum.photos/seed/golf2/200/200" },
-    { name: "Cypress Point", id: "#GC-1029", location: "Pebble Beach, CA", holes: 18, par: 72, status: ClubStatus.Open, bookings: "32/50", trend: "+5%", progress: 64, image: "https://picsum.photos/seed/golf3/200/200" },
-    { name: "Shinnecock Hills", id: "#GC-3321", location: "Southampton, NY", holes: 18, par: 70, status: ClubStatus.Closed, bookings: "0/60", trend: "-100%", progress: 0, image: "https://picsum.photos/seed/golf4/200/200" },
-    { name: "Oakmont Country Club", id: "#GC-7712", location: "Plum, PA", holes: 18, par: 71, status: ClubStatus.Open, bookings: "55/55", trend: "Full", progress: 100, image: "https://picsum.photos/seed/golf5/200/200" },
-  ];
+  const [clubs, setClubs] = useState(() => [
+    { name: 'Pine Valley Golf Club', id: '#GC-4921', location: 'Clementon, NJ', holes: 18, par: 70, status: ClubStatus.Open, bookings: '48/60', trend: '+12%', progress: 80, image: 'https://picsum.photos/seed/golf1/200/200' },
+    { name: 'Augusta National', id: '#GC-8832', location: 'Augusta, GA', holes: 18, par: 72, status: ClubStatus.Maintenance, bookings: '0/0', trend: '-', progress: 0, image: 'https://picsum.photos/seed/golf2/200/200' },
+    { name: 'Cypress Point', id: '#GC-1029', location: 'Pebble Beach, CA', holes: 18, par: 72, status: ClubStatus.Open, bookings: '32/50', trend: '+5%', progress: 64, image: 'https://picsum.photos/seed/golf3/200/200' },
+    { name: 'Shinnecock Hills', id: '#GC-3321', location: 'Southampton, NY', holes: 18, par: 70, status: ClubStatus.Closed, bookings: '0/60', trend: '-100%', progress: 0, image: 'https://picsum.photos/seed/golf4/200/200' },
+    { name: 'Oakmont Country Club', id: '#GC-7712', location: 'Plum, PA', holes: 18, par: 71, status: ClubStatus.Open, bookings: '55/55', trend: 'Full', progress: 100, image: 'https://picsum.photos/seed/golf5/200/200' },
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | ClubStatus>( 'all');
+
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    location: '',
+    holes: 18,
+    par: 72,
+    status: ClubStatus.Open as ClubStatus,
+    image: '',
+  });
+
+  const filteredClubs = useMemo(
+    () =>
+      clubs.filter((club) => {
+        const matchSearch =
+          !searchTerm ||
+          club.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          club.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          club.id.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const matchStatus =
+          statusFilter === 'all'
+            ? true
+            : club.status === statusFilter;
+
+        return matchSearch && matchStatus;
+      }),
+    [clubs, searchTerm, statusFilter]
+  );
+
+  const openEditModal = (index: number) => {
+    const club = clubs[index];
+    setEditingIndex(index);
+    setEditForm({
+      name: club.name,
+      location: club.location,
+      holes: club.holes,
+      par: club.par,
+      status: club.status,
+      image: club.image,
+    });
+  };
+
+  const closeEditModal = () => {
+    setEditingIndex(null);
+  };
+
+  const handleEditChange = (
+    field: 'name' | 'location' | 'holes' | 'par' | 'status' | 'image',
+    value: string
+  ) => {
+    setEditForm((prev) => ({
+      ...prev,
+      [field]:
+        field === 'holes' || field === 'par'
+          ? Number(value) || 0
+          : field === 'status'
+          ? (value as ClubStatus)
+          : value,
+    }));
+  };
+
+  const handleSaveEdit = () => {
+    if (editingIndex === null) return;
+
+    setClubs((prev) =>
+      prev.map((club, idx) =>
+        idx === editingIndex
+          ? { ...club, ...editForm }
+          : club
+      )
+    );
+
+    setEditingIndex(null);
+  };
 
   const statusTags = [
-    { label: trans.filterAll, active: true, color: 'primary' },
-    { label: t.admin.slots.statusAvailable, active: false, color: 'emerald' },
-    { label: trans.statusMaintenance, active: false, color: 'amber' },
-    { label: t.admin.slots.statusClosed, active: false, color: 'red' },
+    {
+      label: trans.filterAll,
+      key: 'all' as const,
+      color: 'primary',
+    },
+    {
+      label: t.admin.slots.statusAvailable,
+      key: ClubStatus.Open as const,
+      color: 'emerald',
+    },
+    {
+      label: trans.statusMaintenance,
+      key: ClubStatus.Maintenance as const,
+      color: 'amber',
+    },
+    {
+      label: t.admin.slots.statusClosed,
+      key: ClubStatus.Closed as const,
+      color: 'red',
+    },
   ];
 
   return (
@@ -46,19 +140,23 @@ const Clubs: React.FC = () => {
           <input
             className="w-full h-11 rounded-xl bg-slate-50 border border-border-light text-text-main placeholder-text-muted focus:border-primary focus:ring-1 focus:ring-primary pl-10 text-sm font-medium"
             placeholder={trans.searchPlaceholder}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <span className="material-symbols-outlined absolute left-3 top-3 text-text-muted text-[20px] group-focus-within:text-primary transition-colors">search</span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full">
           <span className="text-[10px] font-black uppercase text-text-muted tracking-widest mr-2">{trans.quickFilter}:</span>
-          {statusTags.map((tag, i) => (
+          {statusTags.map((tag) => (
             <button
-              key={i}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${tag.active
+              key={tag.key}
+              onClick={() => setStatusFilter(tag.key)}
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${
+                statusFilter === tag.key
                   ? 'bg-primary text-white border-primary shadow-md'
                   : 'bg-white text-text-muted border-border-light hover:border-slate-400'
-                }`}
+              }`}
             >
               {tag.label}
             </button>
@@ -80,7 +178,7 @@ const Clubs: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-light font-medium">
-              {clubs.map((club, i) => (
+              {filteredClubs.map((club, i) => (
                 <tr key={i} className="group hover:bg-slate-50 transition-all cursor-pointer">
                   <td className="p-6">
                     <div className="flex items-center gap-4">
@@ -135,9 +233,16 @@ const Clubs: React.FC = () => {
                     </div>
                   </td>
                   <td className="p-6 text-right">
-                    <button className="text-text-muted hover:text-text-main p-2 rounded-xl hover:bg-slate-200 transition-all">
-                      <span className="material-symbols-outlined text-[22px]">more_vert</span>
-                    </button>
+                    <div className="inline-flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => openEditModal(i)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-black border border-border-light text-text-muted hover:text-text-main hover:bg-slate-100 transition-all"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                        {trans.editClub || t.admin.common.edit}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -145,6 +250,123 @@ const Clubs: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Edit club modal */}
+      {editingIndex !== null && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl border border-border-light max-w-xl w-full mx-4 p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-black text-text-main">{trans.editClub}</h3>
+                <p className="text-sm text-text-muted mt-1">
+                  Cập nhật thông tin hiển thị của sân golf trong bảng điều khiển.
+                </p>
+              </div>
+              <button
+                onClick={closeEditModal}
+                className="h-9 w-9 flex items-center justify-center rounded-full hover:bg-slate-100 text-text-muted transition-all"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">
+                  Tên sân
+                </label>
+                <input
+                  className="w-full h-10 rounded-xl border border-border-light px-3 text-sm font-medium text-text-main bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  value={editForm.name}
+                  onChange={(e) => handleEditChange('name', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">
+                  Vị trí
+                </label>
+                <input
+                  className="w-full h-10 rounded-xl border border-border-light px-3 text-sm font-medium text-text-main bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  value={editForm.location}
+                  onChange={(e) => handleEditChange('location', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">
+                  Số hố
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={36}
+                  className="w-full h-10 rounded-xl border border-border-light px-3 text-sm font-medium text-text-main bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  value={editForm.holes}
+                  onChange={(e) => handleEditChange('holes', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">
+                  Par
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={80}
+                  className="w-full h-10 rounded-xl border border-border-light px-3 text-sm font-medium text-text-main bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  value={editForm.par}
+                  onChange={(e) => handleEditChange('par', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">
+                  Trạng thái
+                </label>
+                <select
+                  className="w-full h-10 rounded-xl border border-border-light px-3 text-sm font-medium text-text-main bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  value={editForm.status}
+                  onChange={(e) => handleEditChange('status', e.target.value)}
+                >
+                  <option value={ClubStatus.Open}>{t.admin.slots.statusAvailable}</option>
+                  <option value={ClubStatus.Maintenance}>{trans.statusMaintenance}</option>
+                  <option value={ClubStatus.Closed}>{t.admin.slots.statusClosed}</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">
+                  Ảnh (URL)
+                </label>
+                <input
+                  className="w-full h-10 rounded-xl border border-border-light px-3 text-sm font-medium text-text-main bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                  value={editForm.image}
+                  onChange={(e) => handleEditChange('image', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={closeEditModal}
+                className="px-4 h-10 rounded-xl border border-border-light text-sm font-bold text-text-muted hover:bg-slate-100 transition-all"
+              >
+                {t.admin.common.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveEdit}
+                className="px-5 h-10 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-black shadow-md shadow-green-200 transition-all active:scale-95"
+              >
+                {t.admin.common.save}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -142,10 +142,52 @@ export interface Translations {
         weekendPrice: string;
         teeTimes: string;
         addTime: string;
+        courseList: string;
+        addNewCourse: string;
+        refresh: string;
+        searchPlaceholder: string;
+        filterRegion: string;
+        filterHoles: string;
+        filterMaxPlayers: string;
+        filterPriceRange: string;
+        all: string;
+        under2M: string;
+        between2M3M: string;
+        between3M4M: string;
+        over4M: string;
+        notAvailable: string;
+        noCoursesFound: string;
+        uploadingImages: string;
+        courseUpdatedSuccess: string;
+        coursePublished: string;
+        draftSaved: string;
+        pleaseUploadImage: string;
+        failedToLoadCourses: string;
+        errorOccurred: string;
+        processing: string;
+        weekday: string;
+        weekend: string;
+        maxPlayersLabel: string;
+        holesLabel: string;
+        enterCourseName: string;
+        enterAddress: string;
+        enterWeekdayPrice: string;
+        enterWeekendPrice: string;
+        deleteCourse: string;
+        confirmDeleteTitle: string;
+        confirmDeleteMessage: string;
+        confirmDeleteWarning: string;
+        courseDeletedSuccess: string;
+        deleteFailed: string;
+        status: string;
+        active: string;
+        inactive: string;
+        saveChanges: string;
     };
     common: {
         loading: string;
         error: string;
+        success: string;
         save: string;
         cancel: string;
         delete: string;
@@ -294,10 +336,52 @@ export const translations: Record<Language, Translations> = {
             weekendPrice: 'Giá cuối tuần (VND)',
             teeTimes: 'Danh sách giờ chơi',
             addTime: 'Thêm giờ',
+            courseList: 'Danh sách sân golf',
+            addNewCourse: 'Thêm sân mới',
+            refresh: 'Làm mới',
+            searchPlaceholder: 'Tìm kiếm theo tên hoặc địa chỉ...',
+            filterRegion: 'Vùng miền',
+            filterHoles: 'Số lỗ',
+            filterMaxPlayers: 'Số người chơi',
+            filterPriceRange: 'Mức giá',
+            all: 'Tất cả',
+            under2M: 'Dưới 2 triệu',
+            between2M3M: '2 - 3 triệu',
+            between3M4M: '3 - 4 triệu',
+            over4M: 'Trên 4 triệu',
+            notAvailable: 'Chưa có',
+            noCoursesFound: 'Không tìm thấy sân golf nào',
+            uploadingImages: 'Đang tải lên {count} hình ảnh...',
+            courseUpdatedSuccess: 'Cập nhật sân golf thành công',
+            coursePublished: 'Đã xuất bản sân golf',
+            draftSaved: 'Đã lưu bản nháp',
+            pleaseUploadImage: 'Vui lòng tải lên ít nhất một hình ảnh',
+            failedToLoadCourses: 'Không thể tải danh sách sân golf',
+            errorOccurred: 'Có lỗi xảy ra',
+            processing: 'Đang xử lý...',
+            weekday: 'Ngày thường',
+            weekend: 'Cuối tuần',
+            maxPlayersLabel: 'Tối đa {count} người',
+            holesLabel: '{count} lỗ',
+            enterCourseName: 'Nhập tên sân golf',
+            enterAddress: 'Nhập địa chỉ',
+            enterWeekdayPrice: 'Giá ngày thường (VND)',
+            enterWeekendPrice: 'Giá cuối tuần (VND)',
+            deleteCourse: 'Xóa sân golf',
+            confirmDeleteTitle: 'Xác nhận xóa sân golf',
+            confirmDeleteMessage: 'Bạn có chắc chắn muốn xóa sân golf "{name}" không?',
+            confirmDeleteWarning: 'Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến sân golf này sẽ bị xóa vĩnh viễn.',
+            courseDeletedSuccess: 'Đã xóa sân golf thành công',
+            deleteFailed: 'Không thể xóa sân golf',
+            status: 'Trạng thái',
+            active: 'Đang hoạt động',
+            inactive: 'Ngừng hoạt động',
+            saveChanges: 'Lưu thay đổi',
         },
         common: {
             loading: 'Đang tải...',
             error: 'Lỗi',
+            success: 'Thành công',
             save: 'Lưu',
             cancel: 'Hủy',
             delete: 'Xóa',
@@ -444,10 +528,52 @@ export const translations: Record<Language, Translations> = {
             weekendPrice: '주말 요금 (VND)',
             teeTimes: '티타임 목록',
             addTime: '시간 추가',
+            courseList: '골프장 목록',
+            addNewCourse: '새 골프장 추가',
+            refresh: '새로고침',
+            searchPlaceholder: '이름 또는 주소로 검색...',
+            filterRegion: '지역',
+            filterHoles: '홀 수',
+            filterMaxPlayers: '최대 플레이어 수',
+            filterPriceRange: '가격 범위',
+            all: '전체',
+            under2M: '2백만원 미만',
+            between2M3M: '2백만원 - 3백만원',
+            between3M4M: '3백만원 - 4백만원',
+            over4M: '4백만원 이상',
+            notAvailable: '없음',
+            noCoursesFound: '골프장을 찾을 수 없습니다',
+            uploadingImages: '{count}개의 이미지 업로드 중...',
+            courseUpdatedSuccess: '골프장 업데이트 성공',
+            coursePublished: '골프장 게시됨',
+            draftSaved: '임시 저장됨',
+            pleaseUploadImage: '최소 하나의 이미지를 업로드해주세요',
+            failedToLoadCourses: '골프장 목록을 불러올 수 없습니다',
+            errorOccurred: '오류가 발생했습니다',
+            processing: '처리 중...',
+            weekday: '평일',
+            weekend: '주말',
+            maxPlayersLabel: '최대 {count}명',
+            holesLabel: '{count}홀',
+            enterCourseName: '골프장 이름 입력',
+            enterAddress: '주소 입력',
+            enterWeekdayPrice: '평일 요금 (VND)',
+            enterWeekendPrice: '주말 요금 (VND)',
+            deleteCourse: '골프장 삭제',
+            confirmDeleteTitle: '골프장 삭제 확인',
+            confirmDeleteMessage: '"{name}" 골프장을 정말 삭제하시겠습니까?',
+            confirmDeleteWarning: '이 작업은 되돌릴 수 없습니다. 이 골프장과 관련된 모든 데이터가 영구적으로 삭제됩니다.',
+            courseDeletedSuccess: '골프장이 성공적으로 삭제되었습니다',
+            deleteFailed: '골프장을 삭제할 수 없습니다',
+            status: '상태',
+            active: '활성',
+            inactive: '비활성',
+            saveChanges: '변경 사항 저장',
         },
         common: {
             loading: '로딩 중...',
             error: '오류',
+            success: '성공',
             save: '저장',
             cancel: '취소',
             delete: '삭제',
@@ -594,10 +720,52 @@ export const translations: Record<Language, Translations> = {
             weekendPrice: 'Weekend Price (VND)',
             teeTimes: 'Tee Times',
             addTime: 'Add Time',
+            courseList: 'Course List',
+            addNewCourse: 'Add New Course',
+            refresh: 'Refresh',
+            searchPlaceholder: 'Search by name or address...',
+            filterRegion: 'Region',
+            filterHoles: 'Number of Holes',
+            filterMaxPlayers: 'Max Players',
+            filterPriceRange: 'Price Range',
+            all: 'All',
+            under2M: 'Under 2M',
+            between2M3M: '2M - 3M',
+            between3M4M: '3M - 4M',
+            over4M: 'Over 4M',
+            notAvailable: 'Not Available',
+            noCoursesFound: 'No courses found',
+            uploadingImages: 'Uploading {count} images...',
+            courseUpdatedSuccess: 'Course updated successfully',
+            coursePublished: 'Course published',
+            draftSaved: 'Draft saved',
+            pleaseUploadImage: 'Please upload at least one image',
+            failedToLoadCourses: 'Failed to load courses',
+            errorOccurred: 'An error occurred',
+            processing: 'Processing...',
+            weekday: 'Weekday',
+            weekend: 'Weekend',
+            maxPlayersLabel: 'Max {count} players',
+            holesLabel: '{count} holes',
+            enterCourseName: 'Enter course name',
+            enterAddress: 'Enter address',
+            enterWeekdayPrice: 'Weekday price (VND)',
+            enterWeekendPrice: 'Weekend price (VND)',
+            deleteCourse: 'Delete Course',
+            confirmDeleteTitle: 'Confirm Delete Course',
+            confirmDeleteMessage: 'Are you sure you want to delete the course "{name}"?',
+            confirmDeleteWarning: 'This action cannot be undone. All data related to this course will be permanently deleted.',
+            courseDeletedSuccess: 'Course deleted successfully',
+            deleteFailed: 'Failed to delete course',
+            status: 'Status',
+            active: 'Active',
+            inactive: 'Inactive',
+            saveChanges: 'Save Changes',
         },
         common: {
             loading: 'Loading...',
             error: 'Error',
+            success: 'Success',
             save: 'Save',
             cancel: 'Cancel',
             delete: 'Delete',
