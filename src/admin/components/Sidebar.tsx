@@ -20,6 +20,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { name: trans.nav.dashboard, icon: 'dashboard', path: '/admin/dashboard' },
     { name: trans.nav.bookings, icon: 'calendar_month', path: '/admin/bookings' },
     { name: trans.nav.clubs, icon: 'golf_course', path: '/admin/clubs' },
+    { name: trans.nav.teeTimeRules, icon: 'rule', path: '/admin/tee-time-rules' },
     { name: trans.nav.slotManagement, icon: 'schedule', path: '/admin/slots' },
     { name: trans.nav.users, icon: 'group', path: '/admin/users' },
     { name: trans.nav.reports, icon: 'bar_chart', path: '/admin/reports' },

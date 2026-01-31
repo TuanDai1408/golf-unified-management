@@ -10,6 +10,7 @@ export interface Translations {
         dashboard: string;
         bookings: string;
         clubs: string;
+        teeTimeRules: string;
         slotManagement: string;
         users: string;
         reports: string;
@@ -162,6 +163,38 @@ export interface Translations {
         actionOpen: string;
     };
 
+    // Tee Time Rules / Quy tắc Tee Time / 티타임 규칙
+    teeTimeRules: {
+        title: string;
+        subtitle: string;
+        addRule: string;
+        editRule: string;
+        startTime: string;
+        endTime: string;
+        interval: string;
+        maxPlayers: string;
+        applyDays: string;
+        status: string;
+        active: string;
+        inactive: string;
+        generateSlots: string;
+        generateButton: string;
+        startDate: string;
+        endDate: string;
+        successGenerate: string;
+        confirmDelete: string;
+        noRules: string;
+        days: {
+            mon: string;
+            tue: string;
+            wed: string;
+            thu: string;
+            fri: string;
+            sat: string;
+            sun: string;
+        };
+    };
+
     // Reports / Báo cáo / 보고서
     reports: {
         inventory: string;
@@ -202,6 +235,7 @@ export const translations: Record<Language, Translations> = {
             dashboard: 'Bảng điều khiển',
             bookings: 'Đặt chỗ',
             clubs: 'Sân Golf',
+            teeTimeRules: 'Quy tắc Tee Time',
             slotManagement: 'Quản lý Slot',
             users: 'Người dùng',
             reports: 'Báo cáo',
@@ -343,6 +377,36 @@ export const translations: Record<Language, Translations> = {
             actionClose: 'Đóng',
             actionOpen: 'Mở',
         },
+        teeTimeRules: {
+            title: 'Quản lý Quy tắc Tee Time',
+            subtitle: 'Thiết lập quy tắc và tự động sinh khung giờ cho sân golf',
+            addRule: 'Thêm quy tắc',
+            editRule: 'Sửa quy tắc',
+            startTime: 'Giờ bắt đầu',
+            endTime: 'Giờ kết thúc',
+            interval: 'Khoảng cách (phút)',
+            maxPlayers: 'Người chơi tối đa',
+            applyDays: 'Ngày áp dụng',
+            status: 'Trạng thái',
+            active: 'Hoạt động',
+            inactive: 'Tạm dừng',
+            generateSlots: 'Sinh khung giờ tự động',
+            generateButton: 'Sinh khung giờ ngay',
+            startDate: 'Ngày bắt đầu',
+            endDate: 'Ngày kết thúc',
+            successGenerate: 'Đã sinh thành công {count} slot',
+            confirmDelete: 'Bạn có chắc muốn xóa quy tắc này?',
+            noRules: 'Chưa có quy tắc nào được thiết lập.',
+            days: {
+                mon: 'Thứ 2',
+                tue: 'Thứ 3',
+                wed: 'Thứ 4',
+                thu: 'Thứ 5',
+                fri: 'Thứ 6',
+                sat: 'Thứ 7',
+                sun: 'Chủ nhật',
+            },
+        },
         reports: {
             inventory: 'Kho hàng',
             stats: 'Thống kê',
@@ -376,6 +440,7 @@ export const translations: Record<Language, Translations> = {
             dashboard: '대시보드',
             bookings: '예약',
             clubs: '골프장',
+            teeTimeRules: '티타임 규칙',
             slotManagement: '슬롯 관리',
             users: '사용자',
             reports: '보고서',
@@ -517,6 +582,36 @@ export const translations: Record<Language, Translations> = {
             actionClose: '닫기',
             actionOpen: '열기',
         },
+        teeTimeRules: {
+            title: '티타임 규칙 관리',
+            subtitle: '골프장 티타임 규칙 설정 및 자동 슬롯 생성',
+            addRule: '규칙 추가',
+            editRule: '규칙 수정',
+            startTime: '시작 시간',
+            endTime: '종료 시간',
+            interval: '간격 (분)',
+            maxPlayers: '최대 인원',
+            applyDays: '적용 요일',
+            status: '상태',
+            active: '활성',
+            inactive: '비활성',
+            generateSlots: '자동 슬롯 생성',
+            generateButton: '슬롯 생성하기',
+            startDate: '시작 날짜',
+            endDate: '종료 날짜',
+            successGenerate: '{count}개 슬롯이 생성되었습니다',
+            confirmDelete: '이 규칙을 삭제하시겠습니까?',
+            noRules: '설정된 규칙이 없습니다.',
+            days: {
+                mon: '월요일',
+                tue: '화요일',
+                wed: '수요일',
+                thu: '목요일',
+                fri: '금요일',
+                sat: '토요일',
+                sun: '일요일',
+            },
+        },
         reports: {
             inventory: '재고',
             stats: '통계',
@@ -550,6 +645,7 @@ export const translations: Record<Language, Translations> = {
             dashboard: 'Dashboard',
             bookings: 'Bookings',
             clubs: 'Golf Clubs',
+            teeTimeRules: 'Tee Time Rules',
             slotManagement: 'Slot Management',
             users: 'Users',
             reports: 'Reports',
@@ -690,6 +786,36 @@ export const translations: Record<Language, Translations> = {
             actionEdit: 'Edit',
             actionClose: 'Close',
             actionOpen: 'Open',
+        },
+        teeTimeRules: {
+            title: 'Tee Time Rules Management',
+            subtitle: 'Configure rules and auto-generate slots for golf courses',
+            addRule: 'Add Rule',
+            editRule: 'Edit Rule',
+            startTime: 'Start Time',
+            endTime: 'End Time',
+            interval: 'Interval (min)',
+            maxPlayers: 'Max Players',
+            applyDays: 'Apply Days',
+            status: 'Status',
+            active: 'Active',
+            inactive: 'Inactive',
+            generateSlots: 'Auto-Generate Slots',
+            generateButton: 'Generate Slots Now',
+            startDate: 'Start Date',
+            endDate: 'End Date',
+            successGenerate: 'Successfully generated {count} slots',
+            confirmDelete: 'Are you sure you want to delete this rule?',
+            noRules: 'No rules have been configured yet.',
+            days: {
+                mon: 'Monday',
+                tue: 'Tuesday',
+                wed: 'Wednesday',
+                thu: 'Thursday',
+                fri: 'Friday',
+                sat: 'Saturday',
+                sun: 'Sunday',
+            },
         },
         reports: {
             inventory: 'Inventory',

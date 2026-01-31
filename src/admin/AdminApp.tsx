@@ -7,6 +7,7 @@ import Bookings from './pages/Bookings';
 import Clubs from './pages/Clubs';
 import Users from './pages/Users';
 import Slots from './pages/Slots';
+import TeeTimeRules from './pages/TeeTimeRules';
 
 const AdminApp: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -25,6 +26,7 @@ const AdminApp: React.FC = () => {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="bookings" element={<Bookings />} />
               <Route path="clubs" element={<Clubs />} />
+              <Route path="tee-time-rules" element={<TeeTimeRules />} />
               <Route path="users" element={<Users />} />
               <Route path="slots" element={<Slots />} />
               <Route path="/" element={<Navigate to="dashboard" replace />} />
