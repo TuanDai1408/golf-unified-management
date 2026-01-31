@@ -1,4 +1,4 @@
-const API_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = (import.meta as any).env.VITE_API_URL || 'https://golfviet-premium-backend-production.up.railway.app/api';
 
 class ApiService {
     private async request(endpoint: string, options: RequestInit = {}) {
