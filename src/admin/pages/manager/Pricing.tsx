@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { PricingSlot } from '../types';
-import { useLanguage } from '../../shared/LanguageContext';
+import { PricingSlot } from '../../types';
+import { useLanguage } from '../../../shared/LanguageContext';
 
 const Pricing: React.FC = () => {
   const { t } = useLanguage();

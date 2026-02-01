@@ -1,8 +1,0 @@
-
-{
-  "name": "ClubManager - Golf Operations Suite",
-  "description": "A comprehensive golf club management system featuring tee sheet scheduling, staff management, pricing controls, and course administration.",
-  "requestFramePermissions": [
-    "camera"
-  ]
-}

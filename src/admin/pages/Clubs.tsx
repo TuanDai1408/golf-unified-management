@@ -1,22 +1,51 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ClubStatus } from '../types';
 import { useLanguage } from '../../shared/LanguageContext';
+import { apiService } from '../services/api';
 
 const Clubs: React.FC = () => {
   const { t } = useLanguage();
   const trans = t.admin.clubs;
 
-  const [clubs, setClubs] = useState(() => [
-    { name: 'Pine Valley Golf Club', id: '#GC-4921', location: 'Clementon, NJ', holes: 18, par: 70, status: ClubStatus.Open, bookings: '48/60', trend: '+12%', progress: 80, image: 'https://picsum.photos/seed/golf1/200/200' },
-    { name: 'Augusta National', id: '#GC-8832', location: 'Augusta, GA', holes: 18, par: 72, status: ClubStatus.Maintenance, bookings: '0/0', trend: '-', progress: 0, image: 'https://picsum.photos/seed/golf2/200/200' },
-    { name: 'Cypress Point', id: '#GC-1029', location: 'Pebble Beach, CA', holes: 18, par: 72, status: ClubStatus.Open, bookings: '32/50', trend: '+5%', progress: 64, image: 'https://picsum.photos/seed/golf3/200/200' },
-    { name: 'Shinnecock Hills', id: '#GC-3321', location: 'Southampton, NY', holes: 18, par: 70, status: ClubStatus.Closed, bookings: '0/60', trend: '-100%', progress: 0, image: 'https://picsum.photos/seed/golf4/200/200' },
-    { name: 'Oakmont Country Club', id: '#GC-7712', location: 'Plum, PA', holes: 18, par: 71, status: ClubStatus.Open, bookings: '55/55', trend: 'Full', progress: 100, image: 'https://picsum.photos/seed/golf5/200/200' },
-  ]);
+  const [clubs, setClubs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        setLoading(true);
+        const data = await apiService.getCourses().catch(() => null);
+        if (data) {
+          // Robust check for different response structures
+          const clubsArray = Array.isArray(data) ? data : (data.Courses || data.courses || data.data || []);
+
+          const mappedClubs = clubsArray.map((course: any) => ({
+            ...course,
+            id: course.id || `#GC-${Math.floor(Math.random() * 9000) + 1000}`,
+            image: (Array.isArray(course.images) && course.images.length > 0)
+              ? course.images[0]
+              : (course.image || course.imageUrl || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=1000'),
+            trend: course.trend || '+0%',
+            progress: course.progress || 0,
+            bookings: course.bookings || '0/0',
+            location: course.region || course.address?.split(',').slice(-1)[0]?.trim() || 'Việt Nam',
+            price: (course.price_weekday || 1500000).toLocaleString() + ' VND'
+          }));
+          setClubs(mappedClubs);
+        }
+      } catch (error) {
+        console.error("Failed to fetch clubs:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClubs();
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | ClubStatus>( 'all');
+  const [statusFilter, setStatusFilter] = useState<'all' | ClubStatus>('all');
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editForm, setEditForm] = useState({
@@ -74,8 +103,8 @@ const Clubs: React.FC = () => {
         field === 'holes' || field === 'par'
           ? Number(value) || 0
           : field === 'status'
-          ? (value as ClubStatus)
-          : value,
+            ? (value as ClubStatus)
+            : value,
     }));
   };
 
@@ -152,11 +181,10 @@ const Clubs: React.FC = () => {
             <button
               key={tag.key}
               onClick={() => setStatusFilter(tag.key)}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${
-                statusFilter === tag.key
-                  ? 'bg-primary text-white border-primary shadow-md'
-                  : 'bg-white text-text-muted border-border-light hover:border-slate-400'
-              }`}
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all border ${statusFilter === tag.key
+                ? 'bg-primary text-white border-primary shadow-md'
+                : 'bg-white text-text-muted border-border-light hover:border-slate-400'
+                }`}
             >
               {tag.label}
             </button>
@@ -178,74 +206,91 @@ const Clubs: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-light font-medium">
-              {filteredClubs.map((club, i) => (
-                <tr key={i} className="group hover:bg-slate-50 transition-all cursor-pointer">
-                  <td className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="h-12 w-12 rounded-xl bg-cover bg-center shrink-0 border border-border-light shadow-sm group-hover:scale-105 transition-transform"
-                        style={{ backgroundImage: `url(${club.image})` }}
-                      ></div>
-                      <div className="flex flex-col">
-                        <span className="text-text-main font-black text-base group-hover:text-primary transition-colors">{club.name}</span>
-                        <span className="text-[11px] text-text-muted font-mono">{club.id}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-6">
-                    <div className="flex items-center gap-1.5 text-sm text-text-muted">
-                      <span className="material-symbols-outlined text-[18px]">location_on</span>
-                      {club.location}
-                    </div>
-                  </td>
-                  <td className="p-6">
-                    <div className="flex gap-2">
-                      <span className="px-2 py-1 rounded-lg bg-slate-50 border border-border-light text-[10px] text-text-muted font-black uppercase">{club.holes} {trans.holes}</span>
-                      <span className="px-2 py-1 rounded-lg bg-slate-50 border border-border-light text-[10px] text-text-muted font-black uppercase">{trans.par} {club.par}</span>
-                    </div>
-                  </td>
-                  <td className="p-6">
-                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black border uppercase tracking-wider ${club.status === ClubStatus.Open ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                        club.status === ClubStatus.Maintenance ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                          'bg-red-50 text-red-600 border-red-200'
-                      }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${club.status === ClubStatus.Open ? 'bg-emerald-500' :
-                          club.status === ClubStatus.Maintenance ? 'bg-amber-500 animate-pulse' :
-                            'bg-red-500'
-                        }`}></span>
-                      {club.status === ClubStatus.Open ? t.admin.slots.statusAvailable :
-                        club.status === ClubStatus.Maintenance ? trans.statusMaintenance :
-                          t.admin.slots.statusClosed}
-                    </div>
-                  </td>
-                  <td className="p-6">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-end justify-between">
-                        <span className="text-text-main font-black text-sm">{club.bookings}</span>
-                        <span className={`text-[11px] font-bold ${club.trend.includes('+') ? 'text-emerald-600' : 'text-text-muted'}`}>{club.trend}</span>
-                      </div>
-                      <div className="h-2 w-32 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
-                        <div
-                          className={`h-full transition-all duration-1000 ${club.progress === 100 ? 'bg-amber-500' : 'bg-primary'}`}
-                          style={{ width: `${club.progress}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-6 text-right">
-                    <div className="inline-flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => openEditModal(i)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-black border border-border-light text-text-muted hover:text-text-main hover:bg-slate-100 transition-all"
-                      >
-                        <span className="material-symbols-outlined text-[18px]">edit</span>
-                        {trans.editClub || t.admin.common.edit}
-                      </button>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-20 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                      <p className="text-text-muted font-bold">{t.admin.common.loading}</p>
                     </div>
                   </td>
                 </tr>
-              ))}
+              ) : filteredClubs.length > 0 ? (
+                filteredClubs.map((club, i) => (
+                  <tr key={i} className="group hover:bg-slate-50 transition-all cursor-pointer">
+                    <td className="p-6">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="h-12 w-12 rounded-xl bg-cover bg-center shrink-0 border border-border-light shadow-sm group-hover:scale-105 transition-transform"
+                          style={{ backgroundImage: `url(${club.image})` }}
+                        ></div>
+                        <div className="flex flex-col">
+                          <span className="text-text-main font-black text-base group-hover:text-primary transition-colors">{club.name}</span>
+                          <span className="text-[11px] text-text-muted font-mono">{club.id}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-6">
+                      <div className="flex items-center gap-1.5 text-sm text-text-muted">
+                        <span className="material-symbols-outlined text-[18px]">location_on</span>
+                        {club.location}
+                      </div>
+                    </td>
+                    <td className="p-6">
+                      <div className="flex gap-2">
+                        <span className="px-2 py-1 rounded-lg bg-slate-50 border border-border-light text-[10px] text-text-muted font-black uppercase">{club.holes} {trans.holes}</span>
+                        <span className="px-2 py-1 rounded-lg bg-slate-50 border border-border-light text-[10px] text-text-muted font-black uppercase">{trans.par} {club.par}</span>
+                      </div>
+                    </td>
+                    <td className="p-6">
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black border uppercase tracking-wider ${club.status === ClubStatus.Open ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                        club.status === ClubStatus.Maintenance ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          'bg-red-50 text-red-600 border-red-200'
+                        }`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${club.status === ClubStatus.Open ? 'bg-emerald-500' :
+                          club.status === ClubStatus.Maintenance ? 'bg-amber-500 animate-pulse' :
+                            'bg-red-500'
+                          }`}></span>
+                        {club.status === ClubStatus.Open ? t.admin.slots.statusAvailable :
+                          club.status === ClubStatus.Maintenance ? trans.statusMaintenance :
+                            t.admin.slots.statusClosed}
+                      </div>
+                    </td>
+                    <td className="p-6">
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-end justify-between">
+                          <span className="text-text-main font-black text-sm">{club.bookings}</span>
+                          <span className={`text-[11px] font-bold ${typeof club.trend === 'string' && club.trend.includes('+') ? 'text-emerald-600' : 'text-text-muted'}`}>{club.trend}</span>
+                        </div>
+                        <div className="h-2 w-32 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
+                          <div
+                            className={`h-full transition-all duration-1000 ${club.progress === 100 ? 'bg-amber-500' : 'bg-primary'}`}
+                            style={{ width: `${club.progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-6 text-right">
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => openEditModal(i)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-[11px] font-black border border-border-light text-text-muted hover:text-text-main hover:bg-slate-100 transition-all"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">edit</span>
+                          {trans.editClub || t.admin.common.edit}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="px-6 py-20 text-center text-text-muted italic font-bold">
+                    {t.admin.common.noData}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

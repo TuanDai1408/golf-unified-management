@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useLanguage } from '../../shared/LanguageContext';
+import { useLanguage } from '../../../shared/LanguageContext';
 
 const TeeSheetCalendar: React.FC = () => {
   const { t } = useLanguage();

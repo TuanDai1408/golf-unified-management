@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import { useLanguage } from './LanguageContext';
+import { apiService } from '../admin/services/api';
 
 interface AuthPageProps {
     type: 'admin' | 'manager';
-    onLogin: () => void;
+    onLogin: (role: 'admin' | 'manager') => void;
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ type, onLogin }) => {
@@ -18,14 +19,39 @@ const AuthPage: React.FC<AuthPageProps> = ({ type, onLogin }) => {
     const isManager = type === 'manager';
     const themeClass = isManager ? 'manager-theme' : 'admin-theme';
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (username === 'admin' && password === 'admin') {
-            onLogin();
-        } else if (isManager && username === 'manager' && password === 'manager') {
-            onLogin();
-        } else {
-            setError(t.auth.invalidCredentials);
+        setError('');
+
+        try {
+            // Bypass for admin/admin (maintenance/setup mode)
+            if (username === 'admin' && password === 'admin') {
+                localStorage.setItem('isAdminAuth', 'true');
+                localStorage.setItem('user', JSON.stringify({
+                    full_name: 'Quản trị viên',
+                    role: 'admin',
+                    email: 'admin@golfviet.vn'
+                }));
+                onLogin('admin');
+                return;
+            }
+
+            // Use username field as email if it contains @ or just passing it
+            const loginData = {
+                email: username,
+                password: password
+            };
+
+            const res = await apiService.login(loginData);
+
+            if (res.user && (res.user.role === 'admin' || res.user.role === 'manager')) {
+                onLogin(res.user.role);
+            } else {
+                setError('Login failed: Unauthorized role or invalid response');
+            }
+        } catch (err: any) {
+            console.error('Login error:', err);
+            setError(err.message || t.auth.invalidCredentials);
         }
     };
 
@@ -42,8 +68,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ type, onLogin }) => {
                             key={lang}
                             onClick={() => setLanguage(lang)}
                             className={`px-2 py-1 text-xs rounded border transition-all ${language === lang
-                                    ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
-                                    : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500'
+                                ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
+                                : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500'
                                 }`}
                         >
                             {lang.toUpperCase()}

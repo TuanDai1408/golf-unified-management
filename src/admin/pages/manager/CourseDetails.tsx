@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { useLanguage } from '../../shared/LanguageContext';
-import { createCourse, uploadCourseImages, getCourses, updateCourse, deleteCourse } from '../services/courseService';
+import { useLanguage } from '../../../shared/LanguageContext';
+import { createCourse, uploadCourseImages, getCourses, updateCourse, deleteCourse } from '../../services/courseService';
 
 interface Course {
   id?: string;

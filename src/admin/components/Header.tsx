@@ -9,6 +9,12 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { t } = useLanguage();
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+
+  const userName = user?.full_name || user?.name || t.admin.header.adminName;
+  const userRole = user?.role === 'manager' ? t.admin.nav.managers : (user?.role === 'admin' ? t.admin.header.adminRole : t.admin.header.adminRole);
+  const avatarUrl = user?.avatar_url || user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff`;
 
   return (
     <header className="h-16 border-b border-border-light bg-surface/90 backdrop-blur-md flex items-center justify-between px-6 lg:px-8 shrink-0 z-20 sticky top-0">
@@ -46,12 +52,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         <div className="h-8 w-px bg-border-light mx-1"></div>
         <div className="flex items-center gap-3 cursor-pointer p-1 rounded-lg hover:bg-slate-50 transition-colors">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-text-main leading-tight">{t.admin.header.adminName}</p>
-            <p className="text-xs text-text-muted">{t.admin.header.adminRole}</p>
+            <p className="text-sm font-bold text-text-main leading-tight">{userName}</p>
+            <p className="text-xs text-text-muted">{userRole}</p>
           </div>
           <div
             className="h-10 w-10 rounded-full bg-cover bg-center border-2 border-white shadow-sm"
-            style={{ backgroundImage: "url('https://picsum.photos/seed/admin/100/100')" }}
+            style={{ backgroundImage: `url('${avatarUrl}')` }}
           ></div>
         </div>
       </div>

@@ -1,12 +1,11 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Language, authTranslations, AuthTranslations } from './authTranslations';
-import { translations as managerTrans, Translations as ManagerTrans } from '../manager/translations';
 import { translations as adminTrans, Translations as AdminTrans } from '../admin/translations';
 
 interface GlobalTranslations {
     auth: AuthTranslations;
-    manager: ManagerTrans;
+    manager: AdminTrans['manager'];
     admin: AdminTrans;
 }
 
@@ -31,7 +30,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
     const t: GlobalTranslations = {
         auth: authTranslations[language],
-        manager: managerTrans[language],
+        manager: adminTrans[language].manager,
         admin: adminTrans[language],
     };
 

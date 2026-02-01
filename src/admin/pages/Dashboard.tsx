@@ -1,38 +1,78 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useLanguage } from '../../shared/LanguageContext';
 import StatCard from '../components/StatCard';
 import { getDashboardInsights } from '../services/geminiService';
+import { apiService } from '../services/api';
 
-const data = [
-  { name: 'Mon', revenue: 4500, commission: 800 },
-  { name: 'Tue', revenue: 6500, commission: 1200 },
-  { name: 'Wed', revenue: 3500, commission: 700 },
-  { name: 'Thu', revenue: 8500, commission: 1500 },
-  { name: 'Fri', revenue: 5500, commission: 900 },
-  { name: 'Sat', revenue: 9000, commission: 1800 },
-  { name: 'Sun', revenue: 7500, commission: 1400 },
-  { name: 'Today', revenue: 10500, commission: 2000 },
+const defaultData = [
+  { name: 'Mon', revenue: 0, commission: 0 },
+  { name: 'Tue', revenue: 0, commission: 0 },
+  { name: 'Wed', revenue: 0, commission: 0 },
+  { name: 'Thu', revenue: 0, commission: 0 },
+  { name: 'Fri', revenue: 0, commission: 0 },
+  { name: 'Sat', revenue: 0, commission: 0 },
+  { name: 'Sun', revenue: 0, commission: 0 },
+  { name: 'Today', revenue: 0, commission: 0 },
 ];
 
 const Dashboard: React.FC = () => {
   const { t } = useLanguage();
   const [insight, setInsight] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingAI, setLoadingAI] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
 
-  const stats = {
-    revenue: "$124,500",
-    bookings: "1,240",
-    commission: "$12,450",
-    activeCourses: "42"
-  };
+  const [stats, setStats] = useState({
+    revenue: "0",
+    bookings: "0",
+    commission: "0",
+    activeCourses: "0"
+  });
+
+  const [chartData, setChartData] = useState(defaultData);
+  const [activities, setActivities] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoadingData(true);
+        const [statsRes, activitiesRes] = await Promise.all([
+          apiService.getDashboardStats().catch(() => null),
+          apiService.getActivities().catch(() => [])
+        ]);
+
+        if (statsRes) {
+          const statsData = statsRes.data || statsRes;
+          setStats({
+            revenue: statsData.revenue || "0",
+            bookings: statsData.bookings || "0",
+            commission: statsData.commission || "0",
+            activeCourses: statsData.activeCourses || statsData.totalCourses || "0"
+          });
+          if (statsData.chartData) {
+            setChartData(statsData.chartData);
+          }
+        }
+
+        if (activitiesRes) {
+          setActivities(Array.isArray(activitiesRes) ? activitiesRes : (activitiesRes.data || activitiesRes.activities || []));
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const generateAIInsight = async () => {
-    setLoading(true);
+    setLoadingAI(true);
     const result = await getDashboardInsights(stats);
     setInsight(result || t.admin.common.noData);
-    setLoading(false);
+    setLoadingAI(false);
   };
 
   const activityActions: Record<string, string> = {
@@ -41,11 +81,9 @@ const Dashboard: React.FC = () => {
     'paid invoice': t.admin.dashboard.paidInvoice,
   };
 
-  const activityTimes: Record<string, string> = {
-    'Just now': t.admin.dashboard.justNow,
-    '5m ago': `5${t.admin.dashboard.minutesAgo}`,
-    '12m ago': `12${t.admin.dashboard.minutesAgo}`,
-    '24m ago': `24${t.admin.dashboard.minutesAgo}`,
+  const getActivityTimeLabel = (timeStr: string) => {
+    if (timeStr === 'Just now') return t.admin.dashboard.justNow;
+    return timeStr.replace('min ago', t.admin.dashboard.minutesAgo);
   };
 
   return (
@@ -61,7 +99,7 @@ const Dashboard: React.FC = () => {
             className="flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-md active:scale-95"
           >
             <span className="material-symbols-outlined text-[20px] fill-1 text-emerald-400">psychology</span>
-            {loading ? t.admin.dashboard.analyzing : t.admin.dashboard.aiInsights}
+            {loadingAI ? t.admin.dashboard.analyzing : t.admin.dashboard.aiInsights}
           </button>
           <button className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-md active:scale-95">
             <span className="material-symbols-outlined text-[20px]">download</span>
@@ -101,36 +139,38 @@ const Dashboard: React.FC = () => {
               <h3 className="text-xl font-black text-text-main tracking-tight">{t.admin.dashboard.revenueAnalytics}</h3>
               <p className="text-sm text-text-muted font-medium">{t.admin.dashboard.revenueSubtitle}</p>
             </div>
-            <div className="flex bg-slate-100 p-1 rounded-lg">
-              <button className="px-3 py-1 text-xs font-bold bg-white text-text-main rounded shadow-sm">{t.admin.dashboard.revenue}</button>
-              <button className="px-3 py-1 text-xs font-bold text-text-muted hover:text-text-main transition-colors">{t.admin.dashboard.commission}</button>
-            </div>
           </div>
 
           <div className="flex-1 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
-                  dy={10}
-                />
-                <YAxis hide />
-                <Tooltip
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                />
-                <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={40}>
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={index === data.length - 1 ? '#16a34a' : '#22c55e'} />
-                  ))}
-                </Bar>
-                <Bar dataKey="commission" fill="#e2e8f0" radius={[6, 6, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+            {loadingData ? (
+              <div className="h-full w-full flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
+                    dy={10}
+                  />
+                  <YAxis hide />
+                  <Tooltip
+                    cursor={{ fill: '#f8fafc' }}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  />
+                  <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={40}>
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={index === chartData.length - 1 ? '#16a34a' : '#22c55e'} />
+                    ))}
+                  </Bar>
+                  <Bar dataKey="commission" fill="#e2e8f0" radius={[6, 6, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -143,38 +183,46 @@ const Dashboard: React.FC = () => {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
               </span>
             </h3>
-            <button className="text-primary text-sm font-bold hover:underline">{t.admin.dashboard.viewAll}</button>
           </div>
 
           <div className="space-y-8 flex-1">
-            {[
-              { user: "Michael S.", action: "booked", location: "Pebble Beach", time: "Just now", type: "booking" },
-              { user: "Sarah J.", action: "modified reservation", location: "", time: "5m ago", type: "edit" },
-              { user: "John Doe", action: "paid invoice", location: "", time: "12m ago", type: "payment" },
-              { user: "David W.", action: "booked", location: "Augusta National", time: "24m ago", type: "booking" },
-            ].map((activity, idx) => (
-              <div key={idx} className="flex gap-4">
-                <div className="relative">
-                  <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-border-light">
-                    <span className="material-symbols-outlined text-[20px] text-text-muted">person</span>
-                  </div>
-                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
-                    <span className={`material-symbols-outlined text-[14px] p-0.5 rounded-full ${activity.type === 'booking' ? 'text-primary bg-primary-subtle' : activity.type === 'edit' ? 'text-blue-500 bg-blue-50' : 'text-orange-500 bg-orange-50'}`}>
-                      {activity.type === 'booking' ? 'check_circle' : activity.type === 'edit' ? 'edit' : 'payments'}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm text-text-main font-medium leading-tight">
-                    <span className="font-bold">{activity.user}</span> {activityActions[activity.action] || activity.action}
-                    {activity.location && <span className="text-primary font-bold"> {activity.location}</span>}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">{activityTimes[activity.time] || activity.time}</span>
-                  </div>
-                </div>
+            {loadingData ? (
+              <div className="space-y-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="h-16 bg-slate-50 animate-pulse rounded-lg"></div>
+                ))}
               </div>
-            ))}
+            ) : activities.length > 0 ? (
+              activities.map((activity, idx) => (
+                <div key={idx} className="flex gap-4">
+                  <div className="relative">
+                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center border border-border-light overflow-hidden">
+                      {activity.avatar ? (
+                        <img src={activity.avatar} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-[20px] text-text-muted">person</span>
+                      )}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                      <span className={`material-symbols-outlined text-[14px] p-0.5 rounded-full ${activity.type === 'booking' ? 'text-primary bg-primary-subtle' : activity.type === 'edit' ? 'text-blue-500 bg-blue-50' : 'text-orange-500 bg-orange-50'}`}>
+                        {activity.type === 'booking' ? 'check_circle' : activity.type === 'edit' ? 'edit' : 'payments'}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-sm text-text-main font-medium leading-tight">
+                      <span className="font-bold">{activity.userName || activity.user}</span> {activityActions[activity.action] || activity.action}
+                      {activity.location && <span className="text-primary font-bold"> {activity.location}</span>}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">{getActivityTimeLabel(activity.time)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-sm text-text-muted italic">{t.admin.common.noData}</div>
+            )}
           </div>
         </div>
       </div>

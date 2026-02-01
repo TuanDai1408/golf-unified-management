@@ -1,12 +1,12 @@
 
 import React from 'react';
-import { Booking } from '../types';
-import { useLanguage } from '../../shared/LanguageContext';
+import { TeeSheetBooking } from '../../types';
+import { useLanguage } from '../../../shared/LanguageContext';
 
 const TeeSheetList: React.FC = () => {
   const { t } = useLanguage();
   const trans = t.manager.teeSheet;
-  const bookings: Booking[] = [
+  const bookings: TeeSheetBooking[] = [
     { id: '1', player: 'John Doe', time: '10:15 AM', pax: 4, holes: 18, cart: true, status: 'confirmed', payment: 'paid', refId: '#BK-9281' },
     { id: '2', player: 'Alice Smith', time: '10:00 AM', pax: 2, holes: 9, cart: false, status: 'checked-in', payment: 'at-counter', refId: '#BK-9275' },
     { id: '3', player: 'Michael Johnson', time: '09:45 AM', pax: 4, holes: 18, cart: true, status: 'checked-in', payment: 'paid', refId: '#BK-9260' },
@@ -131,15 +131,15 @@ const TeeSheetList: React.FC = () => {
                   <td className="px-6 py-4"><span className="text-sm text-slate-500 font-mono">{booking.refId}</span></td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${booking.payment === 'paid' ? 'bg-green-100 text-green-800' :
-                        booking.payment === 'due' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-800'
+                      booking.payment === 'due' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-800'
                       }`}>
                       {booking.payment.replace('-', ' ')}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase ${booking.status === 'confirmed' ? 'bg-primary text-black' :
-                        booking.status === 'checked-in' ? 'bg-blue-100 text-blue-800' :
-                          booking.status === 'pending' ? 'bg-orange-100 text-orange-800' : 'bg-slate-100 text-slate-600'
+                      booking.status === 'checked-in' ? 'bg-blue-100 text-blue-800' :
+                        booking.status === 'pending' ? 'bg-orange-100 text-orange-800' : 'bg-slate-100 text-slate-600'
                       }`}>
                       <span className={`size-1.5 rounded-full ${booking.status === 'confirmed' ? 'bg-black' : 'bg-current'}`}></span>
                       {booking.status.replace('-', ' ')}

@@ -1,24 +1,48 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookingStatus } from '../types';
 import { useLanguage } from '../../shared/LanguageContext';
+import { apiService } from '../services/api';
 
 const Bookings: React.FC = () => {
   const { t } = useLanguage();
   const trans = t.admin.bookings;
 
-  const bookings = [
-    { id: "#BK-2024-001", customer: "Sarah Jenkins", email: "sarah.j@example.com", teeTime: "08:00 AM", course: "Sunset Valley", players: 4, price: "$240.00", status: BookingStatus.Confirmed },
-    { id: "#BK-2024-002", customer: "Michael Jordan", email: "mj23@example.com", teeTime: "08:15 AM", course: "Sunset Valley", players: 2, price: "$120.00", status: BookingStatus.Pending },
-    { id: "#BK-2024-003", customer: "David Chen", email: "david.c@example.com", teeTime: "08:30 AM", course: "Sunset Valley", players: 4, price: "$240.00", status: BookingStatus.Confirmed },
-    { id: "#BK-2024-004", customer: "Emily Rose", email: "emily.r@example.com", teeTime: "09:00 AM", course: "Lakeside Green", players: 3, price: "$180.00", status: BookingStatus.Canceled },
-    { id: "#BK-2024-005", customer: "Mark Wilson", email: "mark.w@example.com", teeTime: "09:15 AM", course: "Lakeside Green", players: 2, price: "$120.00", status: BookingStatus.Confirmed },
-  ];
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total: "0",
+    revenue: "0",
+    cancelled: "0"
+  });
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+        const data = await apiService.getBookings();
+        if (data) {
+          setBookings(data.bookings || []);
+          setStats({
+            total: data.totalCount?.toString() || data.bookings?.length.toString() || "0",
+            revenue: data.totalRevenue || "0",
+            cancelled: data.cancelledCount?.toString() || "0"
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const statCards = [
-    { label: t.admin.dashboard.totalBookings, value: "42", trend: "+5%", positive: true, icon: "calendar_today" },
-    { label: t.admin.dashboard.totalRevenue, value: "$3,200", trend: "+12%", positive: true, icon: "payments" },
-    { label: trans.filterCancelled, value: "2", trend: "-1%", positive: false, icon: "cancel" },
+    { label: t.admin.dashboard.totalBookings, value: stats.total, trend: "+0%", positive: true, icon: "calendar_today" },
+    { label: t.admin.dashboard.totalRevenue, value: stats.revenue, trend: "+0%", positive: true, icon: "payments" },
+    { label: trans.filterCancelled, value: stats.cancelled, trend: "0%", positive: false, icon: "cancel" },
   ];
 
   return (
@@ -92,61 +116,82 @@ const Bookings: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-light text-sm font-medium">
-              {bookings.map((booking, i) => (
-                <tr key={i} className="group hover:bg-slate-50 transition-all cursor-pointer">
-                  <td className="px-6 py-5 text-text-muted font-mono">{booking.id}</td>
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-slate-100 border border-border-light flex items-center justify-center font-bold text-text-muted">
-                        {booking.customer.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <p className="font-bold text-text-main leading-tight">{booking.customer}</p>
-                        <p className="text-[11px] text-text-muted mt-0.5">{booking.email}</p>
-                      </div>
+              {loading ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-20 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+                      <p className="text-text-muted font-bold">{t.admin.common.loading}</p>
                     </div>
                   </td>
-                  <td className="px-6 py-5">
-                    <p className="font-bold text-text-main">{booking.teeTime}</p>
-                    <p className="text-[11px] text-text-muted">Oct 24, 2024</p>
-                  </td>
-                  <td className="px-6 py-5 text-text-main">{booking.course}</td>
-                  <td className="px-6 py-5 text-center text-text-main">{booking.players}</td>
-                  <td className="px-6 py-5 text-right font-black text-text-main">{booking.price}</td>
-                  <td className="px-6 py-5">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold border ${booking.status === BookingStatus.Confirmed ? 'bg-primary-subtle text-primary border-primary-light' :
-                        booking.status === BookingStatus.Pending ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
-                          'bg-red-50 text-red-600 border-red-200'
-                      }`}>
-                      {booking.status === BookingStatus.Confirmed ? trans.statusConfirmed :
-                        booking.status === BookingStatus.Pending ? trans.statusPending :
-                          trans.statusCancelled}
-                    </span>
-                  </td>
-                  <td className="px-6 py-5 text-right">
-                    <button className="text-text-muted hover:text-text-main p-1 rounded-lg hover:bg-slate-200 transition-all">
-                      <span className="material-symbols-outlined">more_vert</span>
-                    </button>
+                </tr>
+              ) : bookings.length > 0 ? (
+                bookings.map((booking, i) => (
+                  <tr key={i} className="group hover:bg-slate-50 transition-all cursor-pointer">
+                    <td className="px-6 py-5 text-text-muted font-mono">{booking.bookingCode || booking.id}</td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-slate-100 border border-border-light flex items-center justify-center font-bold text-text-muted overflow-hidden">
+                          {booking.customerAvatar ? (
+                            <img src={booking.customerAvatar} alt="" />
+                          ) : (
+                            (booking.customerName || booking.customer?.name || 'U').split(' ').map((n: string) => n[0]).join('')
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-bold text-text-main leading-tight">{booking.customerName || booking.customer?.name}</p>
+                          <p className="text-[11px] text-text-muted mt-0.5">{booking.customerEmail || booking.customer?.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <p className="font-bold text-text-main">{booking.teeTime}</p>
+                      <p className="text-[11px] text-text-muted">{booking.date}</p>
+                    </td>
+                    <td className="px-6 py-5 text-text-main">{booking.courseName || booking.course}</td>
+                    <td className="px-6 py-5 text-center text-text-main">{booking.players}</td>
+                    <td className="px-6 py-5 text-right font-black text-text-main">{booking.price}</td>
+                    <td className="px-6 py-5">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold border ${booking.status === BookingStatus.Confirmed || booking.status === 'confirmed' ? 'bg-primary-subtle text-primary border-primary-light' :
+                          booking.status === BookingStatus.Pending || booking.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                            'bg-red-50 text-red-600 border-red-200'
+                        }`}>
+                        {booking.status === BookingStatus.Confirmed || booking.status === 'confirmed' ? trans.statusConfirmed :
+                          booking.status === BookingStatus.Pending || booking.status === 'pending' ? trans.statusPending :
+                            trans.statusCancelled}
+                      </span>
+                    </td>
+                    <td className="px-6 py-5 text-right">
+                      <button className="text-text-muted hover:text-text-main p-1 rounded-lg hover:bg-slate-200 transition-all">
+                        <span className="material-symbols-outlined">more_vert</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="px-6 py-20 text-center text-text-muted italic">
+                    {t.admin.common.noData}
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
-        <div className="bg-slate-50 border-t border-border-light px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-[13px] font-medium text-text-muted">
-            {t.admin.common.loading.replace('...', '')} <span className="font-bold text-text-main">1</span> to <span className="font-bold text-text-main">5</span> of <span className="font-bold text-text-main">42</span> results
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="px-4 py-1.5 text-sm font-bold text-text-muted bg-white border border-border-light rounded-xl hover:bg-slate-50 transition-all disabled:opacity-50" disabled>{t.manager.staff.previous}</button>
-            <div className="flex items-center gap-1">
-              <button className="h-9 w-9 flex items-center justify-center text-sm font-bold rounded-xl bg-primary text-white shadow-md">1</button>
-              <button className="h-9 w-9 flex items-center justify-center text-sm font-bold rounded-xl text-text-muted hover:bg-white hover:border border-transparent hover:border-border-light transition-all">2</button>
-              <button className="h-9 w-9 flex items-center justify-center text-sm font-bold rounded-xl text-text-muted hover:bg-white hover:border border-transparent hover:border-border-light transition-all">3</button>
+        {!loading && bookings.length > 0 && (
+          <div className="bg-slate-50 border-t border-border-light px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-[13px] font-medium text-text-muted">
+              {t.admin.common.loading.replace('...', '')} <span className="font-bold text-text-main">1</span> to <span className="font-bold text-text-main">{bookings.length}</span> of <span className="font-bold text-text-main">{stats.total}</span> results
             </div>
-            <button className="px-4 py-1.5 text-sm font-bold text-text-muted bg-white border border-border-light rounded-xl hover:bg-slate-50 transition-all">{t.manager.staff.next}</button>
+            <div className="flex items-center gap-2">
+              <button className="px-4 py-1.5 text-sm font-bold text-text-muted bg-white border border-border-light rounded-xl hover:bg-slate-50 transition-all disabled:opacity-50" disabled>{t.manager.staff.previous}</button>
+              <div className="flex items-center gap-1">
+                <button className="h-9 w-9 flex items-center justify-center text-sm font-bold rounded-xl bg-primary text-white shadow-md">1</button>
+              </div>
+              <button className="px-4 py-1.5 text-sm font-bold text-text-muted bg-white border border-border-light rounded-xl hover:bg-slate-50 transition-all disabled:opacity-50" disabled>{t.manager.staff.next}</button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
