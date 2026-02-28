@@ -37,11 +37,11 @@ const AdminApp: React.FC<AdminAppProps> = ({ userRole }) => {
               <Route path="tee-time-rules" element={<TeeTimeRules />} />
               <Route path="slots" element={<Slots />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="bookings" element={<Bookings />} />
 
               {/* Admin Only Routes */}
               {isAdmin && (
                 <>
-                  <Route path="bookings" element={<Bookings />} />
                   <Route path="users" element={<Users />} />
                   <Route path="managers" element={<ManagerManagement />} />
                 </>

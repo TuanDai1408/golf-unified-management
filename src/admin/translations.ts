@@ -97,6 +97,7 @@ export interface Translations {
         filterPending: string;
         filterCancelled: string;
         tableId: string;
+        tableBookingTime: string;
         tableCustomer: string;
         tableCourse: string;
         tableDate: string;
@@ -114,6 +115,10 @@ export interface Translations {
         actionView: string;
         actionEdit: string;
         actionCancel: string;
+        modalTitle: string;
+        modalNoPhone: string;
+        modalPrint: string;
+        modalClose: string;
     };
 
     // Clubs / Sân golf / 골프장
@@ -509,6 +514,7 @@ export const translations: Record<Language, Translations> = {
             filterPending: 'Chờ xử lý',
             filterCancelled: 'Đã hủy',
             tableId: 'ID',
+            tableBookingTime: 'Thời gian đặt',
             tableCustomer: 'Khách hàng',
             tableCourse: 'Sân golf',
             tableDate: 'Ngày',
@@ -526,6 +532,10 @@ export const translations: Record<Language, Translations> = {
             actionView: 'Xem',
             actionEdit: 'Sửa',
             actionCancel: 'Hủy',
+            modalTitle: 'Chi tiết đặt chỗ',
+            modalNoPhone: 'Không có SĐT',
+            modalPrint: 'In hóa đơn',
+            modalClose: 'Đóng',
         },
         clubs: {
             title: 'Quản lý Sân Golf',
@@ -938,6 +948,7 @@ export const translations: Record<Language, Translations> = {
             filterPending: '대기 중',
             filterCancelled: '취소됨',
             tableId: 'ID',
+            tableBookingTime: '예약 시간',
             tableCustomer: '고객',
             tableCourse: '골프장',
             tableDate: '날짜',
@@ -955,6 +966,10 @@ export const translations: Record<Language, Translations> = {
             actionView: '보기',
             actionEdit: '수정',
             actionCancel: '취소',
+            modalTitle: '예약 상세 정보',
+            modalNoPhone: '전화번호 없음',
+            modalPrint: '청구서 출력',
+            modalClose: '닫기',
         },
         clubs: {
             title: '골프장 관리',
@@ -1367,6 +1382,7 @@ export const translations: Record<Language, Translations> = {
             filterPending: 'Pending',
             filterCancelled: 'Cancelled',
             tableId: 'ID',
+            tableBookingTime: 'Booking Time',
             tableCustomer: 'Customer',
             tableCourse: 'Course',
             tableDate: 'Date',
@@ -1384,6 +1400,10 @@ export const translations: Record<Language, Translations> = {
             actionView: 'View',
             actionEdit: 'Edit',
             actionCancel: 'Cancel',
+            modalTitle: 'Booking Details',
+            modalNoPhone: 'No Phone Number',
+            modalPrint: 'Print Invoice',
+            modalClose: 'Close',
         },
         clubs: {
             title: 'Golf Club Management',

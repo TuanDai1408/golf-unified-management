@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, userRole }) => {
 
   const adminItems = [
     { name: trans.nav.dashboard, icon: 'dashboard', path: '/admin/dashboard', roles: ['admin', 'manager'] },
-    { name: trans.nav.bookings, icon: 'calendar_month', path: '/admin/bookings', roles: ['admin'] },
+    { name: trans.nav.bookings, icon: 'calendar_month', path: '/admin/bookings', roles: ['admin', 'manager'] },
     { name: trans.nav.clubs, icon: 'stadium', path: '/admin/clubs', roles: ['admin', 'manager'] },
     { name: trans.nav.users, icon: 'group', path: '/admin/users', roles: ['admin'] },
     { name: trans.nav.managers, icon: 'admin_panel_settings', path: '/admin/managers', roles: ['admin'] },
