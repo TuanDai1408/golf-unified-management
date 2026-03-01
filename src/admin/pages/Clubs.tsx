@@ -1,11 +1,12 @@
-
 import React, { useMemo, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ClubStatus } from '../types';
 import { useLanguage } from '../../shared/LanguageContext';
 import { apiService } from '../services/api';
 
 const Clubs: React.FC = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const trans = t.admin.clubs;
 
   const [clubs, setClubs] = useState<any[]>([]);
@@ -20,18 +21,28 @@ const Clubs: React.FC = () => {
           // Robust check for different response structures
           const clubsArray = Array.isArray(data) ? data : (data.Courses || data.courses || data.data || []);
 
-          const mappedClubs = clubsArray.map((course: any) => ({
-            ...course,
-            id: course.id || `#GC-${Math.floor(Math.random() * 9000) + 1000}`,
-            image: (Array.isArray(course.images) && course.images.length > 0)
-              ? course.images[0]
-              : (course.image || course.imageUrl || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=1000'),
-            trend: course.trend || '+0%',
-            progress: course.progress || 0,
-            bookings: course.bookings || '0/0',
-            location: course.region || course.address?.split(',').slice(-1)[0]?.trim() || 'Việt Nam',
-            price: (course.price_weekday || 1500000).toLocaleString() + ' VND'
-          }));
+          const mappedClubs = clubsArray.map((course: any) => {
+            // Map backend status to frontend enum
+            let internalStatus = ClubStatus.Closed;
+            const s = course.status?.toLowerCase();
+            if (s === 'active' || s === 'open') internalStatus = ClubStatus.Open;
+            else if (s === 'maintenance') internalStatus = ClubStatus.Maintenance;
+            else if (s === 'inactive' || s === 'closed') internalStatus = ClubStatus.Closed;
+
+            return {
+              ...course,
+              id: course.id || `#GC-${Math.floor(Math.random() * 9000) + 1000}`,
+              image: (Array.isArray(course.images) && course.images.length > 0)
+                ? course.images[0]
+                : (course.image || course.imageUrl || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=1000'),
+              status: internalStatus,
+              trend: course.trend || '+0%',
+              progress: course.progress !== undefined ? course.progress : 0,
+              bookings: course.bookingsFormatted || '0/0',
+              location: course.region || course.address?.split(',').slice(-1)[0]?.trim() || 'Việt Nam',
+              price: (course.price_weekday || 1500000).toLocaleString() + ' VND'
+            };
+          });
           setClubs(mappedClubs);
         }
       } catch (error) {
@@ -145,6 +156,38 @@ const Clubs: React.FC = () => {
     },
   ];
 
+  const handleExportClubs = () => {
+    if (!filteredClubs.length) return;
+
+    // Headers for CSV
+    const headers = ['ID', 'Tên Sân', 'Vị trí', 'Số hố', 'Par', 'Trạng thái', 'Lượt đặt hôm nay'];
+
+    // Convert data to CSV rows
+    const rows = filteredClubs.map(club => [
+      club.id,
+      club.name,
+      club.location,
+      club.holes,
+      club.par,
+      club.status === ClubStatus.Open ? 'Đang hoạt động' : club.status === ClubStatus.Maintenance ? 'Bảo trì' : 'Đóng cửa',
+      club.bookings
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `golf_clubs_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-6 lg:p-10 space-y-10">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -153,11 +196,17 @@ const Clubs: React.FC = () => {
           <p className="text-text-muted font-medium">{trans.subtitle}</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-6 h-12 rounded-xl border border-border-light bg-white text-text-main text-sm font-black hover:bg-slate-50 transition-all shadow-sm">
+          <button
+            onClick={handleExportClubs}
+            className="flex items-center gap-2 px-6 h-12 rounded-xl border border-border-light bg-white text-text-main text-sm font-black hover:bg-slate-50 transition-all shadow-sm"
+          >
             <span className="material-symbols-outlined text-[20px]">file_download</span>
             {t.admin.common.export}
           </button>
-          <button className="flex items-center gap-2 px-6 h-12 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-black shadow-lg shadow-green-200 transition-all active:scale-95">
+          <button
+            onClick={() => navigate('/admin/courses')}
+            className="flex items-center gap-2 px-6 h-12 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-black shadow-lg shadow-green-200 transition-all active:scale-95"
+          >
             <span className="material-symbols-outlined text-[20px]">add</span>
             {trans.addClub}
           </button>
@@ -260,7 +309,6 @@ const Clubs: React.FC = () => {
                       <div className="flex flex-col gap-2">
                         <div className="flex items-end justify-between">
                           <span className="text-text-main font-black text-sm">{club.bookings}</span>
-                          <span className={`text-[11px] font-bold ${typeof club.trend === 'string' && club.trend.includes('+') ? 'text-emerald-600' : 'text-text-muted'}`}>{club.trend}</span>
                         </div>
                         <div className="h-2 w-32 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
                           <div

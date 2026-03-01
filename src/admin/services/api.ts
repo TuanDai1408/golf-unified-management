@@ -103,12 +103,14 @@ class ApiService {
     }
 
     // Dashboard
-    async getDashboardStats() {
-        return this.request('/admin/stats');
+    async getDashboardStats(filters: any = {}) {
+        const query = new URLSearchParams(filters).toString();
+        return this.request(`/admin/stats${query ? `?${query}` : ''}`);
     }
 
-    async getActivities() {
-        return this.request('/admin/activities');
+    async getActivities(filters: any = {}) {
+        const query = new URLSearchParams(filters).toString();
+        return this.request(`/admin/activities${query ? `?${query}` : ''}`);
     }
 
     // Bookings
@@ -116,9 +118,36 @@ class ApiService {
         return this.request('/bookings/all');
     }
 
+    async adminCreateBooking(data: any) {
+        return this.request('/bookings/admin/create', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
     // Users
     async getUsers() {
-        return this.request('/users');
+        return this.request('/auth');
+    }
+
+    async createUser(data: any) {
+        return this.request('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async updateUser(id: string, data: any) {
+        return this.request(`/auth/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(data),
+        });
+    }
+
+    async deleteUser(id: string) {
+        return this.request(`/auth/${id}`, {
+            method: 'DELETE',
+        });
     }
 
     async getStaff() {

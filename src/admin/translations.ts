@@ -119,6 +119,24 @@ export interface Translations {
         modalNoPhone: string;
         modalPrint: string;
         modalClose: string;
+        addModalTitle: string;
+        labelCustomer: string;
+        placeholderCustomer: string;
+        labelCourse: string;
+        placeholderCourse: string;
+        labelDate: string;
+        labelTeeTime: string;
+        placeholderTeeTime: string;
+        labelPlayers: string;
+        labelTotalPrice: string;
+        btnCancel: string;
+        btnConfirm: string;
+        validationAlert: string;
+        successAlert: string;
+        errorAlert: string;
+        teeTimeFull: string;
+        teeTimeRemaining: string;
+        labelAdditionalRequests: string;
     };
 
     // Clubs / Sân golf / 골프장
@@ -183,6 +201,28 @@ export interface Translations {
         actionView: string;
         actionEdit: string;
         actionDelete: string;
+        roleCustomer: string;
+        roleManager: string;
+        labelFullName: string;
+        labelEmail: string;
+        labelPhone: string;
+        labelPassword: string;
+        labelRole: string;
+        placeholderName: string;
+        placeholderEmail: string;
+        placeholderPhone: string;
+        placeholderPassword: string;
+        statusActive: string;
+        statusPending: string;
+        statusInactive: string;
+        confirmDeleteTitle: string;
+        confirmDeleteMessage: string;
+        deleteSuccess: string;
+        deleteError: string;
+        editUser: string;
+        tableStatus: string;
+        successAlert: string;
+        errorAlert: string;
     };
 
     // Slots / Quản lý slot / 슬롯 관리
@@ -536,6 +576,24 @@ export const translations: Record<Language, Translations> = {
             modalNoPhone: 'Không có SĐT',
             modalPrint: 'In hóa đơn',
             modalClose: 'Đóng',
+            addModalTitle: 'Thêm Đặt Chỗ Mới',
+            labelCustomer: 'Khách hàng',
+            placeholderCustomer: '-- Chọn khách hàng --',
+            labelCourse: 'Sân Golf',
+            placeholderCourse: '-- Chọn sân --',
+            labelDate: 'Ngày chơi',
+            labelTeeTime: 'Giờ chơi (Tee Time)',
+            placeholderTeeTime: '-- Chọn giờ chơi --',
+            labelPlayers: 'Số người',
+            labelTotalPrice: 'Tổng tiền (VND)',
+            btnCancel: 'Hủy bỏ',
+            btnConfirm: 'Xác Nhận Đặt Chỗ',
+            validationAlert: 'Vui lòng điền đầy đủ thông tin!',
+            successAlert: 'Thêm đặt chỗ thành công!',
+            errorAlert: 'Lỗi: ',
+            teeTimeFull: 'Hết chỗ',
+            teeTimeRemaining: 'Còn {count} chỗ',
+            labelAdditionalRequests: 'Yêu cầu thêm',
         },
         clubs: {
             title: 'Quản lý Sân Golf',
@@ -596,6 +654,28 @@ export const translations: Record<Language, Translations> = {
             actionView: 'Xem',
             actionEdit: 'Sửa',
             actionDelete: 'Xóa',
+            roleCustomer: 'Khách hàng',
+            roleManager: 'Nhân viên quản lý',
+            labelFullName: 'Họ và tên',
+            labelEmail: 'Email',
+            labelPhone: 'Số điện thoại',
+            labelPassword: 'Mật khẩu',
+            labelRole: 'Vai trò',
+            placeholderName: 'Nhập họ và tên',
+            placeholderEmail: 'example@gmail.com',
+            placeholderPhone: '09xxx',
+            placeholderPassword: '••••••••',
+            statusActive: 'Đang hoạt động',
+            statusPending: 'Chờ xác thực',
+            statusInactive: 'Bị khóa',
+            confirmDeleteTitle: 'Xác nhận xóa',
+            confirmDeleteMessage: 'Bạn có chắc chắn muốn xóa người dùng {name}? Hành động này không thể hoàn tác.',
+            deleteSuccess: 'Đã xóa người dùng thành công',
+            deleteError: 'Lỗi khi xóa người dùng',
+            editUser: 'Chỉnh sửa người dùng',
+            tableStatus: 'Trạng thái',
+            successAlert: 'Đã cập nhật thành công!',
+            errorAlert: 'Lỗi: ',
         },
         slots: {
             title: 'Quản lý Slot thời gian',
@@ -970,6 +1050,24 @@ export const translations: Record<Language, Translations> = {
             modalNoPhone: '전화번호 없음',
             modalPrint: '청구서 출력',
             modalClose: '닫기',
+            addModalTitle: '새 예약 추가',
+            labelCustomer: '고객',
+            placeholderCustomer: '-- 고객 선택 --',
+            labelCourse: '골프장',
+            placeholderCourse: '-- 골프장 선택 --',
+            labelDate: '플레이 날짜',
+            labelTeeTime: '티타임',
+            placeholderTeeTime: '-- 티타임 선택 --',
+            labelPlayers: '인원 수',
+            labelTotalPrice: '총 금액 (VND)',
+            btnCancel: '취소',
+            btnConfirm: '예약 확정',
+            validationAlert: '모든 정보를 입력해주세요!',
+            successAlert: '예약이 성공적으로 추가되었습니다!',
+            errorAlert: '오류: ',
+            teeTimeFull: '매진',
+            teeTimeRemaining: '{count}석 남음',
+            labelAdditionalRequests: '추가 요청 사항',
         },
         clubs: {
             title: '골프장 관리',
@@ -1000,9 +1098,9 @@ export const translations: Record<Language, Translations> = {
         },
         users: {
             title: '사용자 관리',
-            subtitle: '사용자 계정 및 권한 관리',
+            subtitle: '사용자 계정 및 역할 관리',
             addUser: '사용자 추가',
-            exportUsers: '목록 내보내기',
+            exportUsers: '사용자 목록 내보내기',
             searchPlaceholder: '사용자 검색...',
             filterAll: '전체',
             filterAdmin: '관리자',
@@ -1013,7 +1111,7 @@ export const translations: Record<Language, Translations> = {
             managers: '매니저',
             pendingInvites: '대기 중인 초대',
             userProfile: '사용자 프로필',
-            noChange: '변경 없음',
+            noChange: '변경 사항 없음',
             actionNeeded: '조치 필요',
             tableId: 'ID',
             tableName: '이름',
@@ -1030,6 +1128,28 @@ export const translations: Record<Language, Translations> = {
             actionView: '보기',
             actionEdit: '수정',
             actionDelete: '삭제',
+            roleCustomer: '고객',
+            roleManager: '매니저',
+            labelFullName: '성명',
+            labelEmail: '이메일',
+            labelPhone: '전화번호',
+            labelPassword: '비밀번호',
+            labelRole: '역할',
+            placeholderName: '이름을 입력하세요',
+            placeholderEmail: 'example@gmail.com',
+            placeholderPhone: '09xxx',
+            placeholderPassword: '••••••••',
+            statusActive: '활성',
+            statusPending: '대기 중',
+            statusInactive: '비활성',
+            confirmDeleteTitle: '삭제 확인',
+            confirmDeleteMessage: '{name} 사용자를 정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+            deleteSuccess: '사용자가 성공적으로 삭제되었습니다',
+            deleteError: '사용자 삭제 오류',
+            editUser: '사용자 수정',
+            tableStatus: '상태',
+            successAlert: '성공적으로 업데이트되었습니다!',
+            errorAlert: '오류: ',
         },
         slots: {
             title: '시간 슬롯 관리',
@@ -1404,6 +1524,24 @@ export const translations: Record<Language, Translations> = {
             modalNoPhone: 'No Phone Number',
             modalPrint: 'Print Invoice',
             modalClose: 'Close',
+            addModalTitle: 'Add New Booking',
+            labelCustomer: 'Customer',
+            placeholderCustomer: '-- Select customer --',
+            labelCourse: 'Golf Course',
+            placeholderCourse: '-- Select course --',
+            labelDate: 'Play Date',
+            labelTeeTime: 'Tee Time',
+            placeholderTeeTime: '-- Select tee time --',
+            labelPlayers: 'Players',
+            labelTotalPrice: 'Total Price (VND)',
+            btnCancel: 'Cancel',
+            btnConfirm: 'Confirm Booking',
+            validationAlert: 'Please fill in all information!',
+            successAlert: 'Booking added successfully!',
+            errorAlert: 'Error: ',
+            teeTimeFull: 'Full',
+            teeTimeRemaining: '{count} slots left',
+            labelAdditionalRequests: 'Additional Requests',
         },
         clubs: {
             title: 'Golf Club Management',
@@ -1447,8 +1585,8 @@ export const translations: Record<Language, Translations> = {
             managers: 'Managers',
             pendingInvites: 'Pending Invites',
             userProfile: 'User Profile',
-            noChange: 'No change',
-            actionNeeded: 'Action needed',
+            noChange: 'No Changes',
+            actionNeeded: 'Action Needed',
             tableId: 'ID',
             tableName: 'Name',
             tableEmail: 'Email',
@@ -1464,6 +1602,28 @@ export const translations: Record<Language, Translations> = {
             actionView: 'View',
             actionEdit: 'Edit',
             actionDelete: 'Delete',
+            roleCustomer: 'Customer',
+            roleManager: 'Manager',
+            labelFullName: 'Full Name',
+            labelEmail: 'Email',
+            labelPhone: 'Phone Number',
+            labelPassword: 'Password',
+            labelRole: 'Role',
+            placeholderName: 'Enter full name',
+            placeholderEmail: 'example@gmail.com',
+            placeholderPhone: '09xxx',
+            placeholderPassword: '••••••••',
+            statusActive: 'Active',
+            statusPending: 'Pending',
+            statusInactive: 'Inactive',
+            confirmDeleteTitle: 'Confirm Delete',
+            confirmDeleteMessage: 'Are you sure you want to delete user {name}? This action cannot be undone.',
+            deleteSuccess: 'User deleted successfully',
+            deleteError: 'Error deleting user',
+            editUser: 'Edit User',
+            tableStatus: 'Status',
+            successAlert: 'Updated successfully!',
+            errorAlert: 'Error: ',
         },
         slots: {
             title: 'Time Slot Management',
