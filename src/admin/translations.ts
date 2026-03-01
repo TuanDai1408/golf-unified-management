@@ -83,6 +83,25 @@ export interface Translations {
         booked: string;
         modifiedReservation: string;
         paidInvoice: string;
+        startDate: string;
+        endDate: string;
+        region: string;
+        golfCourse: string;
+        allRegions: string;
+        allCourses: string;
+        clearFilters: string;
+        revenueOverTime: string;
+        revenueOverTimeSubtitle: string;
+        noTimeData: string;
+        revenueByRegion: string;
+        revenueByRegionSubtitle: string;
+        noRegionData: string;
+        topCourses: string;
+        topCoursesSubtitle: string;
+        noCourseData: string;
+        liveActivityTitle: string;
+        noActivityData: string;
+        aiAnalysis: string;
     };
 
     // Bookings / Đặt chỗ / 예약
@@ -542,6 +561,25 @@ export const translations: Record<Language, Translations> = {
             booked: 'đã đặt',
             modifiedReservation: 'đã sửa đặt chỗ',
             paidInvoice: 'đã thanh toán hóa đơn',
+            startDate: 'Từ ngày',
+            endDate: 'Đến ngày',
+            region: 'Vùng miền',
+            golfCourse: 'Sân Golf',
+            allRegions: 'Tất cả vùng',
+            allCourses: 'Tất cả sân',
+            clearFilters: 'Xóa lọc',
+            revenueOverTime: 'Doanh Thu Theo Thời Gian',
+            revenueOverTimeSubtitle: 'Dữ liệu phân tích dựa trên bộ lọc',
+            noTimeData: 'Không có dữ liệu thời gian phù hợp.',
+            revenueByRegion: 'Doanh Thu Theo Vùng',
+            revenueByRegionSubtitle: 'Phân bổ tỷ lệ doanh thu',
+            noRegionData: 'Không có dữ liệu vùng.',
+            topCourses: 'Top Sân Golf Doanh Thu Cao',
+            topCoursesSubtitle: 'Dựa trên kết quả lọc',
+            noCourseData: 'Không có dữ liệu sân golf.',
+            liveActivityTitle: 'Hoạt Động Trực Tiếp',
+            noActivityData: 'Chưa có dữ liệu hoạt động.',
+            aiAnalysis: 'AI Phân Tích',
         },
         bookings: {
             title: 'Quản lý Đặt chỗ',
@@ -1016,6 +1054,25 @@ export const translations: Record<Language, Translations> = {
             booked: '예약함',
             modifiedReservation: '예약 수정함',
             paidInvoice: '송장 결제함',
+            startDate: '시작일',
+            endDate: '종료일',
+            region: '지역',
+            golfCourse: '골프장',
+            allRegions: '모든 지역',
+            allCourses: '모든 골프장',
+            clearFilters: '필터 초기화',
+            revenueOverTime: '시간대별 수익',
+            revenueOverTimeSubtitle: '필터에 따른 분석 데이터',
+            noTimeData: '해당 기간의 데이터가 없습니다.',
+            revenueByRegion: '지역별 수익',
+            revenueByRegionSubtitle: '수익 비율 분포',
+            noRegionData: '지역 데이터가 없습니다.',
+            topCourses: '최고 수익 골프장 Top',
+            topCoursesSubtitle: '필터 결과 기준',
+            noCourseData: '골프장 데이터가 없습니다.',
+            liveActivityTitle: '실시간 활동',
+            noActivityData: '활동 데이터가 없습니다.',
+            aiAnalysis: 'AI 분석',
         },
         bookings: {
             title: '예약 관리',
@@ -1490,6 +1547,25 @@ export const translations: Record<Language, Translations> = {
             booked: 'booked',
             modifiedReservation: 'modified reservation',
             paidInvoice: 'paid invoice',
+            startDate: 'Start Date',
+            endDate: 'End Date',
+            region: 'Region',
+            golfCourse: 'Golf Course',
+            allRegions: 'All Regions',
+            allCourses: 'All Courses',
+            clearFilters: 'Clear Filters',
+            revenueOverTime: 'Revenue Over Time',
+            revenueOverTimeSubtitle: 'Analysis data based on filters',
+            noTimeData: 'No time data available.',
+            revenueByRegion: 'Revenue by Region',
+            revenueByRegionSubtitle: 'Revenue distribution ratio',
+            noRegionData: 'No region data available.',
+            topCourses: 'Top Golf Courses by Revenue',
+            topCoursesSubtitle: 'Based on filter results',
+            noCourseData: 'No course data available.',
+            liveActivityTitle: 'Live Activity',
+            noActivityData: 'No activity data available.',
+            aiAnalysis: 'AI Analysis',
         },
         bookings: {
             title: 'Booking Management',

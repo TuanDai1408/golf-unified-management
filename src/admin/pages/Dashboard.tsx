@@ -11,7 +11,7 @@ import { apiService } from '../services/api';
 const COLORS = ['#16a34a', '#22c55e', '#4ade80', '#86efac', '#bbf7d0', '#f0fdf4'];
 
 const Dashboard: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [insight, setInsight] = useState<string | null>(null);
   const [loadingAI, setLoadingAI] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -55,7 +55,8 @@ const Dashboard: React.FC = () => {
       const date = new Date(normalized);
       if (isNaN(date.getTime())) return dateString;
 
-      return new Intl.DateTimeFormat('vi-VN', {
+      const locale = language === 'ko' ? 'ko-KR' : language === 'en' ? 'en-US' : 'vi-VN';
+      return new Intl.DateTimeFormat(locale, {
         timeZone: 'Asia/Ho_Chi_Minh',
         hour: '2-digit',
         minute: '2-digit',
@@ -149,7 +150,7 @@ const Dashboard: React.FC = () => {
             className="flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-md active:scale-95"
           >
             <span className="material-symbols-outlined text-[20px] fill-1 text-emerald-400">psychology</span>
-            {loadingAI ? t.admin.dashboard.analyzing : "AI Phân Tích"}
+            {loadingAI ? t.admin.dashboard.analyzing : t.admin.dashboard.aiAnalysis}
           </button>
         </div>
       </div>
@@ -157,7 +158,7 @@ const Dashboard: React.FC = () => {
       {/* Filter Bar */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-wrap items-end gap-6">
         <div className="flex-1 min-w-[200px] space-y-2">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">Từ ngày</label>
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">{t.admin.dashboard.startDate}</label>
           <input
             type="date"
             value={filters.startDate}
@@ -166,7 +167,7 @@ const Dashboard: React.FC = () => {
           />
         </div>
         <div className="flex-1 min-w-[200px] space-y-2">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">Đến ngày</label>
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">{t.admin.dashboard.endDate}</label>
           <input
             type="date"
             value={filters.endDate}
@@ -175,26 +176,26 @@ const Dashboard: React.FC = () => {
           />
         </div>
         <div className="flex-1 min-w-[200px] space-y-2">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">Vùng miền</label>
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">{t.admin.dashboard.region}</label>
           <select
             value={filters.region}
             onChange={(e) => handleFilterChange('region', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer"
           >
-            <option value="">Tất cả vùng</option>
+            <option value="">{t.admin.dashboard.allRegions}</option>
             {options.regions.map(r => (
               <option key={r} value={r}>{r}</option>
             ))}
           </select>
         </div>
         <div className="flex-1 min-w-[200px] space-y-2">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">Sân Golf</label>
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider px-1">{t.admin.dashboard.golfCourse}</label>
           <select
             value={filters.courseId}
             onChange={(e) => handleFilterChange('courseId', e.target.value)}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-all cursor-pointer"
           >
-            <option value="">Tất cả sân</option>
+            <option value="">{t.admin.dashboard.allCourses}</option>
             {options.courses.map(c => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
@@ -204,7 +205,7 @@ const Dashboard: React.FC = () => {
           onClick={clearFilters}
           className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95"
         >
-          Xóa lọc
+          {t.admin.dashboard.clearFilters}
         </button>
       </div>
 
@@ -221,8 +222,8 @@ const Dashboard: React.FC = () => {
         <div className="xl:col-span-2 bg-white border border-slate-200 rounded-2xl p-8 flex flex-col shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <h3 className="text-xl font-black text-slate-900 tracking-tight">Doanh Thu Theo Thời Gian</h3>
-              <p className="text-sm text-slate-500 font-medium whitespace-nowrap">Dữ liệu phân tích dựa trên bộ lọc</p>
+              <h3 className="text-xl font-black text-slate-900 tracking-tight">{t.admin.dashboard.revenueOverTime}</h3>
+              <p className="text-sm text-slate-500 font-medium whitespace-nowrap">{t.admin.dashboard.revenueOverTimeSubtitle}</p>
             </div>
           </div>
 
@@ -256,15 +257,15 @@ const Dashboard: React.FC = () => {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-slate-400 italic">Không có dữ liệu thời gian phù hợp.</div>
+              <div className="h-full w-full flex items-center justify-center text-slate-400 italic">{t.admin.dashboard.noTimeData}</div>
             )}
           </div>
         </div>
 
         {/* Biểu đồ doanh thu theo vùng */}
         <div className="bg-white border border-slate-200 rounded-2xl p-8 flex flex-col shadow-sm">
-          <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Doanh Thu Theo Vùng</h3>
-          <p className="text-sm text-slate-500 font-medium mb-8">Phân bổ tỷ lệ doanh thu</p>
+          <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">{t.admin.dashboard.revenueByRegion}</h3>
+          <p className="text-sm text-slate-500 font-medium mb-8">{t.admin.dashboard.revenueByRegionSubtitle}</p>
 
           <div className="flex-1 flex flex-col justify-center">
             {charts.regionData.length > 0 ? (
@@ -300,7 +301,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center text-slate-400 italic py-20">Không có dữ liệu vùng.</div>
+              <div className="text-center text-slate-400 italic py-20">{t.admin.dashboard.noRegionData}</div>
             )}
           </div>
         </div>
@@ -309,8 +310,8 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Biểu đồ doanh thu theo sân */}
         <div className="bg-white border border-slate-200 rounded-2xl p-8 flex flex-col shadow-sm">
-          <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Top Sân Golf Doanh Thu Cao</h3>
-          <p className="text-sm text-slate-500 font-medium mb-8">Dựa trên kết quả lọc</p>
+          <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">{t.admin.dashboard.topCourses}</h3>
+          <p className="text-sm text-slate-500 font-medium mb-8">{t.admin.dashboard.topCoursesSubtitle}</p>
           <div className="h-[350px] w-full">
             {charts.courseData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -323,14 +324,14 @@ const Dashboard: React.FC = () => {
                     axisLine={false}
                     tickLine={false}
                     tick={{ fill: '#475569', fontSize: 12, fontWeight: 500 }}
-                    width={120}
+                    width={200}
                   />
                   <Tooltip />
                   <Bar dataKey="revenue" fill="#10b981" radius={[0, 4, 4, 0]} barSize={20} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-slate-400 italic">Không có dữ liệu sân golf.</div>
+              <div className="h-full w-full flex items-center justify-center text-slate-400 italic">{t.admin.dashboard.noCourseData}</div>
             )}
           </div>
         </div>
@@ -339,7 +340,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white border border-slate-200 rounded-2xl p-8 flex flex-col shadow-sm">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-              Hoạt Động Trực Tiếp
+              {t.admin.dashboard.liveActivityTitle}
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
@@ -369,7 +370,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-slate-900 font-medium leading-relaxed">
-                      <span className="font-bold text-slate-950">{activity.user}</span> {activity.action}
+                      <span className="font-bold text-slate-950">{activity.user}</span> {activity.type === 'success' ? t.admin.dashboard.paidInvoice : t.admin.dashboard.booked}
                       <span className="text-emerald-600 font-bold block sm:inline"> @{activity.target}</span>
                     </p>
                     <div className="flex items-center gap-2 mt-1">
@@ -380,7 +381,7 @@ const Dashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="text-sm text-slate-500 italic py-10 text-center">Chưa có dữ liệu hoạt động.</div>
+              <div className="text-sm text-slate-500 italic py-10 text-center">{t.admin.dashboard.noActivityData}</div>
             )}
           </div>
         </div>
